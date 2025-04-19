@@ -62,6 +62,9 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
         user.setUsername("admin");
         user.setPassword(passwordEncoder.encode("admin"));
         user.setEmail("admin@admin.com");
+        user.setCredentialsNonExpired(true);
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
         user.setRoles(List.of(adminRole.get()));
         user.setEnabled(true);
         userRepository.save(user);

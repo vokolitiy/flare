@@ -33,8 +33,11 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.authorizeHttpRequests(registry -> {
-            registry.requestMatchers("/api/v1/auth/**").permitAll();
+        httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> {
+            authorizeHttpRequests
+                    .requestMatchers("/api/v1/auth/login").permitAll()
+                    .requestMatchers("/api/v1/auth/signup").permitAll()
+                    .anyRequest().permitAll();
         });
         httpSecurity.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -29,6 +29,10 @@ public class JwtService {
                 .compact();
     }
 
+    public long getJwtExpiration() {
+        return jwtExpiration;
+    }
+
     public boolean isTokenValid(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token);

@@ -106,6 +106,10 @@ public class User implements UserDetails {
         return accountNonLocked;
     }
 
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+
     @Override
     public boolean isCredentialsNonExpired() {
         return credentialsNonExpired;
@@ -122,5 +126,13 @@ public class User implements UserDetails {
 
     public List<Role> getRoles() {
         return roles;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
     }
 }
