@@ -37,6 +37,8 @@ public class SecurityConfiguration {
             authorizeHttpRequests
                     .requestMatchers("/api/v1/auth/login").permitAll()
                     .requestMatchers("/api/v1/auth/signup").permitAll()
+                    .requestMatchers("/api/v1/project/{name}").authenticated()
+                    .requestMatchers("/api/v1/project/create").authenticated()
                     .anyRequest().permitAll();
         });
         httpSecurity.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
