@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.Role;
 import eu.flare.model.User;
 import eu.flare.model.dto.LoginDto;
-import eu.flare.model.dto.LoginResponse;
+import eu.flare.model.response.LoginResponse;
 import eu.flare.model.dto.SignupDto;
 import eu.flare.service.AuthService;
 import eu.flare.service.JwtService;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -72,8 +71,8 @@ public class AuthController {
         }
     }
 
-    public record SignupRequestValidationError(@JsonProperty("error") String reason) { }
-    public record UsernameExistsError(@JsonProperty("error") String reason) {}
-    public record LoginRequestValidationError(@JsonProperty("error") String reason) { }
-    public record UserNotFoundError(@JsonProperty("error") String error) {}
+    record SignupRequestValidationError(@JsonProperty("error") String reason) { }
+    record UsernameExistsError(@JsonProperty("error") String reason) {}
+    record LoginRequestValidationError(@JsonProperty("error") String reason) { }
+    record UserNotFoundError(@JsonProperty("error") String error) {}
 }
