@@ -71,8 +71,8 @@ public class AuthController {
         }
     }
 
-    public record SignupRequestValidationError(@JsonProperty("error") String reason) { }
-    public record UsernameExistsError(@JsonProperty("error") String reason) {}
-    public record LoginRequestValidationError(@JsonProperty("error") String reason) { }
-    public record UserNotFoundError(@JsonProperty("error") String error) {}
+    record SignupRequestValidationError(@JsonProperty("error") String reason) { }
+    record UsernameExistsError(@JsonProperty("error") String reason) {}
+    record LoginRequestValidationError(@JsonProperty("error") String reason) { }
+    record UserNotFoundError(@JsonProperty("error") String error) {}
 }
