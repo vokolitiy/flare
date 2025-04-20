@@ -1,5 +1,6 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -44,6 +45,17 @@ public class User implements UserDetails {
             )
     @JsonManagedReference
     private List<Role> roles = new ArrayList<>();
+
+    @OneToOne(mappedBy = "storyCreator")
+    private Story storyCreator;
+
+    @OneToOne(mappedBy = "storyAssignee")
+    private Story storyAssignee;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "story_id")
+    @JsonBackReference
+    private Story storyWatchers;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
