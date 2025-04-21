@@ -23,11 +23,13 @@ public class Epic {
     private Date updatedAt;
 
     @OneToMany(mappedBy = "epic", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Story> stories;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id")
-    @JsonBackReference
     private Project project;
+
+    public String getName() {
+        return name;
+    }
 }

@@ -24,7 +24,6 @@ public class Project {
     private Date expectedEndDate;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Epic> epics;
 
     public String getName() {
@@ -33,5 +32,13 @@ public class Project {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Epic> getEpics() {
+        return epics;
+    }
+
+    public void setEpics(List<Epic> epics) {
+        this.epics = epics;
     }
 }

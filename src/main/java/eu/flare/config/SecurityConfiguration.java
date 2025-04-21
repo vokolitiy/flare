@@ -39,6 +39,8 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/auth/signup").permitAll()
                     .requestMatchers("/api/v1/project/{name}").authenticated()
                     .requestMatchers("/api/v1/project/create").authenticated()
+                    .requestMatchers("/api/v1/project/{name}/epics").authenticated()
+                    .requestMatchers("/api/v1/project/{name}/epics/add").authenticated()
                     .anyRequest().permitAll();
         });
         httpSecurity.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
