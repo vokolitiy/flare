@@ -23,6 +23,7 @@ public class Epic {
     private Date updatedAt;
 
     @OneToMany(mappedBy = "epic", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Story> stories;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -31,5 +32,17 @@ public class Epic {
 
     public String getName() {
         return name;
+    }
+
+    public List<Story> getStories() {
+        return stories;
+    }
+
+    public void setStories(List<Story> stories) {
+        this.stories = stories;
+    }
+
+    public long getId() {
+        return id;
     }
 }

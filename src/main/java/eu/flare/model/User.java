@@ -43,7 +43,6 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
             )
-    @JsonManagedReference
     private List<Role> roles = new ArrayList<>();
 
     @OneToOne(mappedBy = "storyCreator")
@@ -54,7 +53,6 @@ public class User implements UserDetails {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "story_id")
-    @JsonBackReference
     private Story storyWatchers;
 
     @Override

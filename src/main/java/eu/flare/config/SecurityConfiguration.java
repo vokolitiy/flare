@@ -41,6 +41,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/project/create").authenticated()
                     .requestMatchers("/api/v1/project/{name}/epics").authenticated()
                     .requestMatchers("/api/v1/project/{name}/epics/add").authenticated()
+                    .requestMatchers("/api/v1/epic/{name}/stories/add").authenticated()
                     .anyRequest().permitAll();
         });
         httpSecurity.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);

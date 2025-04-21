@@ -13,4 +13,12 @@ public class StoryProgress {
 
     @OneToOne(mappedBy = "storyProgress")
     private Story story;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
