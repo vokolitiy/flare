@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.Role;
 import eu.flare.model.User;
 import eu.flare.model.dto.LoginDto;
-import eu.flare.model.response.LoginResponse;
 import eu.flare.model.dto.SignupDto;
 import eu.flare.service.AuthService;
 import eu.flare.service.JwtService;
@@ -71,8 +70,13 @@ public class AuthController {
         }
     }
 
-    record SignupRequestValidationError(@JsonProperty("error") String reason) { }
-    record UsernameExistsError(@JsonProperty("error") String reason) {}
-    record LoginRequestValidationError(@JsonProperty("error") String reason) { }
-    record UserNotFoundError(@JsonProperty("error") String error) {}
+    private record SignupRequestValidationError(@JsonProperty("error") String reason) { }
+    private record UsernameExistsError(@JsonProperty("error") String reason) {}
+    private record LoginRequestValidationError(@JsonProperty("error") String reason) { }
+    private record UserNotFoundError(@JsonProperty("error") String error) {}
+    private record LoginResponse(
+            @JsonProperty("token") String token,
+            @JsonProperty("expiresIn") long expiry
+    ) {
+    }
 }

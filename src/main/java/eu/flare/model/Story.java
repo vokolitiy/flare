@@ -31,7 +31,6 @@ public class Story {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "epic_id")
-    @JsonBackReference
     private Epic epic;
 
     private int storyPoints;
