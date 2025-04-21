@@ -31,6 +31,7 @@ public class Story {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "epic_id")
+    @JsonBackReference
     private Epic epic;
 
     private int storyPoints;
@@ -56,10 +57,124 @@ public class Story {
     private User storyAssignee;
 
     @OneToMany(mappedBy = "storyWatchers", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<User> storyWatchers;
 
     @OneToMany(mappedBy = "storyTasks", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Task> storyTasks;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Date getEstimatedCompletionDate() {
+        return estimatedCompletionDate;
+    }
+
+    public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
+        this.estimatedCompletionDate = estimatedCompletionDate;
+    }
+
+    public long getOriginalEstimate() {
+        return originalEstimate;
+    }
+
+    public void setOriginalEstimate(long originalEstimate) {
+        this.originalEstimate = originalEstimate;
+    }
+
+    public long getRemainingEstimate() {
+        return remainingEstimate;
+    }
+
+    public void setRemainingEstimate(long remainingEstimate) {
+        this.remainingEstimate = remainingEstimate;
+    }
+
+    public Epic getEpic() {
+        return epic;
+    }
+
+    public int getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(int storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
+    public StoryPriority getStoryPriority() {
+        return storyPriority;
+    }
+
+    public void setStoryPriority(StoryPriority storyPriority) {
+        this.storyPriority = storyPriority;
+    }
+
+    public StoryProgress getStoryProgress() {
+        return storyProgress;
+    }
+
+    public void setStoryProgress(StoryProgress storyProgress) {
+        this.storyProgress = storyProgress;
+    }
+
+    public User getStoryCreator() {
+        return storyCreator;
+    }
+
+    public void setStoryCreator(User storyCreator) {
+        this.storyCreator = storyCreator;
+    }
+
+    public StoryResolution getStoryResolution() {
+        return storyResolution;
+    }
+
+    public void setStoryResolution(StoryResolution storyResolution) {
+        this.storyResolution = storyResolution;
+    }
+
+    public User getStoryAssignee() {
+        return storyAssignee;
+    }
+
+    public void setStoryAssignee(User storyAssignee) {
+        this.storyAssignee = storyAssignee;
+    }
+
+    public List<User> getStoryWatchers() {
+        return storyWatchers;
+    }
+
+    public void setStoryWatchers(List<User> storyWatchers) {
+        this.storyWatchers = storyWatchers;
+    }
+
+    public void setEpic(Epic epic) {
+        this.epic = epic;
+    }
 }

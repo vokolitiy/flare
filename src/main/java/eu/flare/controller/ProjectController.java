@@ -63,8 +63,8 @@ public class ProjectController {
         }
     }
 
-    @PutMapping(value = "/{name}/epics/add", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Object> addEpics(@PathVariable("name") String name, @RequestBody AddEpicsDto dto) {
+    @PutMapping("/{name}/epics/add")
+    public ResponseEntity<Object> addEpics(@RequestBody AddEpicsDto dto, @PathVariable("name") String name) {
         try {
             Project project = projectService.addProjectEpics(name, dto);
             return ResponseEntity.status(HttpStatus.CREATED)

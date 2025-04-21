@@ -13,4 +13,12 @@ public class StoryPriority {
 
     @OneToOne(mappedBy = "storyPriority")
     private Story story;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

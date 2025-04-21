@@ -29,7 +29,6 @@ public class Task {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "story_id")
-    @JsonBackReference
     private Story storyTasks;
 
     @OneToOne(cascade = CascadeType.ALL)
