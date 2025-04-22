@@ -7,6 +7,7 @@ import eu.flare.exceptions.ProjectNotFoundException;
 import eu.flare.model.Epic;
 import eu.flare.model.Project;
 import eu.flare.model.dto.AddEpicsDto;
+import eu.flare.model.dto.AddMembersDto;
 import eu.flare.model.dto.EmptyProjectDto;
 import eu.flare.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<Object> findProject(@PathVariable("name") String name) {
+    @GetMapping
+    public ResponseEntity<Object> findProject(@RequestParam("name") String name) {
         Optional<Project> project = projectService.findProject(name);
         return project.<ResponseEntity<Object>>map(value -> ResponseEntity.status(HttpStatus.OK)
                 .body(new SearchProjectByNameResponse(value))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -50,22 +51,22 @@ public class ProjectController {
         }
     }
 
-    @GetMapping("/{name}/epics")
-    public ResponseEntity<Object> findProjectEpics(@PathVariable("name") String name) {
-        List<Epic> epics = projectService.findEpics(name);
+    @GetMapping("/{id}/epics")
+    public ResponseEntity<Object> findProjectEpics(@PathVariable("id") long id) {
+        List<Epic> epics = projectService.findEpics(id);
         if (epics.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new EpicsNotFoundResponse(MessageFormat.format("Project {0} does not have any epics", name)));
+                    .body(new EpicsNotFoundResponse(MessageFormat.format("Project {0} does not have any epics", Long.toString(id))));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ProjectWithEpicsResponse(name, epics));
+                    .body(new ProjectWithEpicsResponse(Long.toString(id), epics));
         }
     }
 
-    @PutMapping("/{name}/epics/add")
-    public ResponseEntity<Object> addEpics(@RequestBody AddEpicsDto dto, @PathVariable("name") String name) {
+    @PutMapping("/{id}/epics/add")
+    public ResponseEntity<Object> addEpics(@RequestBody AddEpicsDto dto, @PathVariable("id") long id) {
         try {
-            Project project = projectService.addProjectEpics(name, dto);
+            Project project = projectService.addProjectEpics(id, dto);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ProjectWithEpicsResponse(project.getName(), project.getEpics()));
         } catch (EpicNamesConflictException e) {
@@ -77,6 +78,18 @@ public class ProjectController {
         } catch (ProjectNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ProjectWithEpicsErrorResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/members/add")
+    public ResponseEntity<Object> addProjectMembers(@RequestBody List<AddMembersDto> dto, @PathVariable("id") long id) {
+        try {
+            Project project = projectService.addProjectMembers(id, dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new UpdateProjectResponse(project));
+        } catch (ProjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ProjectNotFoundResponse(e.getMessage()));
         }
     }
 
@@ -92,5 +105,8 @@ public class ProjectController {
     }
     private record ProjectWithEpicsErrorResponse(
             @JsonProperty("error") String error
+    ){}
+    private record UpdateProjectResponse(
+            @JsonProperty("project") Project project
     ){}
 }

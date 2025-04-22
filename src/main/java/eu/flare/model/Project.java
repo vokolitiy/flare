@@ -23,6 +23,10 @@ public class Project {
     private Date updatedAt;
     private Date expectedEndDate;
 
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<User> projectMembers;
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Epic> epics;
 
@@ -40,5 +44,17 @@ public class Project {
 
     public void setEpics(List<Epic> epics) {
         this.epics = epics;
+    }
+
+    public List<User> getProjectMembers() {
+        return projectMembers;
+    }
+
+    public void setProjectMembers(List<User> projectMembers) {
+        this.projectMembers = projectMembers;
+    }
+
+    public long getId() {
+        return id;
     }
 }

@@ -5,26 +5,32 @@ import eu.flare.exceptions.EpicsEmptyException;
 import eu.flare.exceptions.ProjectNotFoundException;
 import eu.flare.model.Epic;
 import eu.flare.model.Project;
+import eu.flare.model.User;
 import eu.flare.model.dto.AddEpicsDto;
+import eu.flare.model.dto.AddMembersDto;
 import eu.flare.model.dto.EmptyProjectDto;
 import eu.flare.repository.ProjectRepository;
+import eu.flare.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
 
     private static final int MAX_PROJECT_NAME_LENGTH = 30;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
         this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 
     public Optional<Project> findProject(String name) {
@@ -42,8 +48,8 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public List<Epic> findEpics(String name) {
-        Optional<Project> projectOptional = projectRepository.findByName(name);
+    public List<Epic> findEpics(long id) {
+        Optional<Project> projectOptional = projectRepository.findById(id);
         if (projectOptional.isEmpty()) {
             return Collections.emptyList();
         } else {
@@ -51,10 +57,10 @@ public class ProjectService {
         }
     }
 
-    public Project addProjectEpics(String name, AddEpicsDto dto) throws EpicNamesConflictException, EpicsEmptyException, ProjectNotFoundException {
-        Optional<Project> projectOptional = projectRepository.findByName(name);
+    public Project addProjectEpics(long id, AddEpicsDto dto) throws EpicNamesConflictException, EpicsEmptyException, ProjectNotFoundException {
+        Optional<Project> projectOptional = projectRepository.findById(id);
         if (projectOptional.isEmpty()) {
-            throw new ProjectNotFoundException("Project with given name %s not found".formatted(name));
+            throw new ProjectNotFoundException("Project with given name %s not found".formatted(id));
         }
         Project project = projectOptional.get();
         List<Epic> epicsToAdd = dto.epics();
@@ -76,5 +82,25 @@ public class ProjectService {
             project.setEpics(epicsToAdd);
             return projectRepository.save(project);
         }
+    }
+
+    public Project addProjectMembers(long id, List<AddMembersDto> dto) throws ProjectNotFoundException {
+        Optional<Project> projectOptional = projectRepository.findById(id);
+        if (projectOptional.isEmpty()) {
+            throw new ProjectNotFoundException("Project not found");
+        }
+        Project project = projectOptional.get();
+        List<User> users = new ArrayList<>();
+        dto.forEach(addMember -> {
+            Optional<User> userOptional = userRepository.findByUsername(addMember.username());
+            if (userOptional.isEmpty()) {
+                throw new UsernameNotFoundException("User not found");
+            }
+            User appUser = userOptional.get();
+            users.add(appUser);
+        });
+
+        project.setProjectMembers(users);
+        return projectRepository.save(project);
     }
 }
