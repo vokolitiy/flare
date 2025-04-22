@@ -60,6 +60,7 @@ public class Story {
     private List<User> storyWatchers;
 
     @OneToMany(mappedBy = "storyTasks", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Task> storyTasks;
 
     public String getName() {
@@ -176,5 +177,13 @@ public class Story {
 
     public void setEpic(Epic epic) {
         this.epic = epic;
+    }
+
+    public List<Task> getStoryTasks() {
+        return storyTasks;
+    }
+
+    public void setStoryTasks(List<Task> storyTasks) {
+        this.storyTasks = storyTasks;
     }
 }

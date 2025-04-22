@@ -1,0 +1,20 @@
+[{
+  "name": "Implement bottom navigation",
+  "description": "Implement bottom navigation using Jetpack navigation library",
+  "completion_date": 86400,
+  "original_estimate": 100,
+  "remaining_estimate": 50,
+  "story_points": 10,
+  "task_priority": {
+    "name": "MAJOR"
+  },
+  "task_progress": {
+    "name": "TODO"
+  },
+  "task_creator": {
+    "username": "Testsub"
+  },
+  "task_assignee": {
+    "username": "Testsub"
+  }
+}]

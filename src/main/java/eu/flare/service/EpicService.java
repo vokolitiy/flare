@@ -6,7 +6,6 @@ import eu.flare.exceptions.StoryNamesConflictException;
 import eu.flare.model.*;
 import eu.flare.model.dto.AddStoryDto;
 import eu.flare.repository.*;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,28 +14,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
 public class EpicService {
 
     private final EpicRepository epicRepository;
-    private final StoryPriorityRepository storyPriorityRepository;
-    private final StoryProgressRepository storyProgressRepository;
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
 
     @Autowired
     public EpicService(
             EpicRepository epicRepository,
-            StoryPriorityRepository storyPriorityRepository,
-            StoryProgressRepository storyProgressRepository,
-            UserRepository userRepository, StoryRepository storyRepository
+            UserRepository userRepository,
+            StoryRepository storyRepository
     ) {
         this.epicRepository = epicRepository;
-        this.storyPriorityRepository = storyPriorityRepository;
-        this.storyProgressRepository = storyProgressRepository;
         this.userRepository = userRepository;
         this.storyRepository = storyRepository;
     }
@@ -72,11 +65,9 @@ public class EpicService {
         dto.forEach(addStoryDto -> {
             StoryPriority priority = new StoryPriority();
             priority.setName(addStoryDto.storyPriority().getName());
-            StoryPriority savedPriority = storyPriorityRepository.save(priority);
 
             StoryProgress storyProgress = new StoryProgress();
             storyProgress.setName(addStoryDto.storyProgress().getName());
-            StoryProgress savedProgress = storyProgressRepository.save(storyProgress);
 
             String storyCreatorName = addStoryDto.storyCreator().getUsername();
             Optional<User> creatorUser = userRepository.findByUsername(storyCreatorName);
@@ -104,8 +95,8 @@ public class EpicService {
             story.setOriginalEstimate(addStoryDto.originalEstimate());
             story.setRemainingEstimate(addStoryDto.remainingEstimate());
             story.setStoryPoints(addStoryDto.storyPoints());
-            story.setStoryPriority(savedPriority);
-            story.setStoryProgress(savedProgress);
+            story.setStoryPriority(priority);
+            story.setStoryProgress(storyProgress);
             story.setStoryCreator(creatorUser.get());
             story.setStoryAssignee(assigneeUser.get());
             story.setStoryWatchers(storyWatchers);
