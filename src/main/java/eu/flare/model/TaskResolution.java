@@ -11,6 +11,4 @@ public class TaskResolution {
     @Column(unique = true, nullable = false, length = 15)
     private String name;
 
-    @OneToOne(mappedBy = "taskResolution")
-    private Task taskResolution;
 }

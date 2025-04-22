@@ -45,12 +45,6 @@ public class User implements UserDetails {
             )
     private List<Role> roles = new ArrayList<>();
 
-    @OneToOne(mappedBy = "storyCreator")
-    private Story storyCreator;
-
-    @OneToOne(mappedBy = "storyAssignee")
-    private Story storyAssignee;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "story_id")
     private Story storyWatchers;

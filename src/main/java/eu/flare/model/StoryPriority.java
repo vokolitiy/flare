@@ -11,9 +11,6 @@ public class StoryPriority {
     @Column(unique = true, nullable = false, length = 15)
     private String name;
 
-    @OneToOne(mappedBy = "storyPriority")
-    private Story story;
-
     public String getName() {
         return name;
     }
