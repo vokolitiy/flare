@@ -4,6 +4,7 @@ import eu.flare.exceptions.StoryNotFoundException;
 import eu.flare.exceptions.TasksNamesConflictException;
 import eu.flare.model.*;
 import eu.flare.model.dto.AddTaskDto;
+import eu.flare.model.dto.RenameStoryDto;
 import eu.flare.repository.StoryRepository;
 import eu.flare.repository.TaskRepository;
 import eu.flare.repository.UserRepository;
@@ -82,6 +83,17 @@ public class StoryService {
         });
 
         story.setStoryTasks(createdTasks);
+        return storyRepository.save(story);
+    }
+
+    public Story renameStory(long id, RenameStoryDto dto) throws StoryNotFoundException {
+        Optional<Story> storyOptional = storyRepository.findById(id);
+        if (storyOptional.isEmpty()) {
+            throw new StoryNotFoundException("Story not found");
+        }
+
+        Story story = storyOptional.get();
+        story.setName(dto.name());
         return storyRepository.save(story);
     }
 }

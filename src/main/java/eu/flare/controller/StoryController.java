@@ -5,6 +5,7 @@ import eu.flare.exceptions.StoryNotFoundException;
 import eu.flare.exceptions.TasksNamesConflictException;
 import eu.flare.model.Story;
 import eu.flare.model.dto.AddTaskDto;
+import eu.flare.model.dto.RenameStoryDto;
 import eu.flare.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,18 @@ public class StoryController {
         }
     }
 
+    @PutMapping("/{id}/rename")
+    public ResponseEntity<Object> renameStory(@PathVariable("id") long id, @RequestBody RenameStoryDto dto) {
+        try {
+            Story story = storyService.renameStory(id, dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new StoryUpdatedResponse(story));
+        } catch (StoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new StoryNotFoundResponse(e.getMessage()));
+        }
+    }
+
     private record StoryResponse(
             @JsonProperty("story") Story story
     ){}
@@ -58,4 +71,8 @@ public class StoryController {
     private record StoryNotFoundResponse(
             @JsonProperty("error") String error
     ){}
+
+    private record StoryUpdatedResponse(
+            @JsonProperty("story") Story story
+    ) {}
 }
