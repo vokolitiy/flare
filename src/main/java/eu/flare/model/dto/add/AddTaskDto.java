@@ -1,10 +1,8 @@
-package eu.flare.model.dto;
+package eu.flare.model.dto.add;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.*;
 import jakarta.validation.constraints.NotBlank;
-
-import java.util.List;
 
 public record AddTaskDto(
         @JsonProperty("name") @NotBlank String name,

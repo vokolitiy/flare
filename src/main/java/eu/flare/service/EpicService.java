@@ -1,11 +1,11 @@
 package eu.flare.service;
 
-import eu.flare.exceptions.EpicNotFoundException;
-import eu.flare.exceptions.RequestBodyEmptyException;
-import eu.flare.exceptions.StoryNamesConflictException;
+import eu.flare.exceptions.notfound.EpicNotFoundException;
+import eu.flare.exceptions.empty.RequestBodyEmptyException;
+import eu.flare.exceptions.conflicts.StoryNamesConflictException;
 import eu.flare.model.*;
-import eu.flare.model.dto.AddStoryDto;
-import eu.flare.model.dto.RenameEpicDto;
+import eu.flare.model.dto.add.AddStoryDto;
+import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,10 +1,10 @@
 package eu.flare.service;
 
-import eu.flare.exceptions.StoryNotFoundException;
-import eu.flare.exceptions.TasksNamesConflictException;
+import eu.flare.exceptions.notfound.StoryNotFoundException;
+import eu.flare.exceptions.conflicts.TasksNamesConflictException;
 import eu.flare.model.*;
-import eu.flare.model.dto.AddTaskDto;
-import eu.flare.model.dto.RenameStoryDto;
+import eu.flare.model.dto.add.AddTaskDto;
+import eu.flare.model.dto.rename.RenameStoryDto;
 import eu.flare.repository.StoryRepository;
 import eu.flare.repository.TaskRepository;
 import eu.flare.repository.UserRepository;

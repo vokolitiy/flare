@@ -1,4 +1,4 @@
-package eu.flare.exceptions;
+package eu.flare.exceptions.empty;
 
 public class EpicsEmptyException extends Exception {
 

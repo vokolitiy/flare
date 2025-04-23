@@ -1,4 +1,4 @@
-package eu.flare.exceptions;
+package eu.flare.exceptions.conflicts;
 
 public class TasksNamesConflictException extends Exception {
 

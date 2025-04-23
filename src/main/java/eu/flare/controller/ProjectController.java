@@ -1,15 +1,15 @@
 package eu.flare.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.exceptions.EpicNamesConflictException;
-import eu.flare.exceptions.EpicsEmptyException;
-import eu.flare.exceptions.ProjectNotFoundException;
+import eu.flare.exceptions.conflicts.EpicNamesConflictException;
+import eu.flare.exceptions.empty.EpicsEmptyException;
+import eu.flare.exceptions.notfound.ProjectNotFoundException;
 import eu.flare.model.Epic;
 import eu.flare.model.Project;
-import eu.flare.model.dto.AddEpicsDto;
-import eu.flare.model.dto.AddMembersDto;
+import eu.flare.model.dto.add.AddEpicsDto;
+import eu.flare.model.dto.add.AddMembersDto;
 import eu.flare.model.dto.EmptyProjectDto;
-import eu.flare.model.dto.RenameProjectDto;
+import eu.flare.model.dto.rename.RenameProjectDto;
 import eu.flare.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

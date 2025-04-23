@@ -1,4 +1,4 @@
-package eu.flare.exceptions;
+package eu.flare.exceptions.notfound;
 
 public class StoryNotFoundException extends Exception {
 

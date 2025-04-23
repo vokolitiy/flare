@@ -1,4 +1,4 @@
-package eu.flare.model.dto;
+package eu.flare.model.dto.add;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.Epic;

@@ -131,4 +131,8 @@ public class Task {
     public void setTaskAssignee(User taskAssignee) {
         this.taskAssignee = taskAssignee;
     }
+
+    public long getId() {
+        return id;
+    }
 }

@@ -1,4 +1,4 @@
-package eu.flare.model.dto;
+package eu.flare.model.dto.rename;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

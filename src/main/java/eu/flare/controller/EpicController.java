@@ -1,12 +1,12 @@
 package eu.flare.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.exceptions.EpicNotFoundException;
-import eu.flare.exceptions.RequestBodyEmptyException;
-import eu.flare.exceptions.StoryNamesConflictException;
+import eu.flare.exceptions.notfound.EpicNotFoundException;
+import eu.flare.exceptions.empty.RequestBodyEmptyException;
+import eu.flare.exceptions.conflicts.StoryNamesConflictException;
 import eu.flare.model.Epic;
-import eu.flare.model.dto.AddStoryDto;
-import eu.flare.model.dto.RenameEpicDto;
+import eu.flare.model.dto.add.AddStoryDto;
+import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.service.EpicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
