@@ -34,6 +34,10 @@ public class Epic {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public List<Story> getStories() {
         return stories;
     }

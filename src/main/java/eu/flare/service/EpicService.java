@@ -5,6 +5,7 @@ import eu.flare.exceptions.RequestBodyEmptyException;
 import eu.flare.exceptions.StoryNamesConflictException;
 import eu.flare.model.*;
 import eu.flare.model.dto.AddStoryDto;
+import eu.flare.model.dto.RenameEpicDto;
 import eu.flare.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,10 +35,10 @@ public class EpicService {
         this.storyRepository = storyRepository;
     }
 
-    public Epic addStoriesForEpic(String name, List<AddStoryDto> dto) throws EpicNotFoundException, RequestBodyEmptyException, UsernameNotFoundException, StoryNamesConflictException {
-        Optional<Epic> epicOptional = findEpic(name);
+    public Epic addStoriesForEpic(long id, List<AddStoryDto> dto) throws EpicNotFoundException, RequestBodyEmptyException, UsernameNotFoundException, StoryNamesConflictException {
+        Optional<Epic> epicOptional = epicRepository.findById(id);
         if (epicOptional.isEmpty()) {
-            throw new EpicNotFoundException("Epic with given name %s not found".formatted(name));
+            throw new EpicNotFoundException("Epic with given name %s not found".formatted(id));
         }
         if (dto.isEmpty()) {
             throw new RequestBodyEmptyException("Request body is empty");
@@ -114,7 +115,18 @@ public class EpicService {
         return savedEpic;
     }
 
-    private Optional<Epic> findEpic(String name) {
+    public Optional<Epic> findEpic(String name) {
         return epicRepository.findByName(name);
+    }
+
+    public Epic renameEpic(long id, RenameEpicDto epicDto) throws EpicNotFoundException {
+        Optional<Epic> epicOptional = epicRepository.findById(id);
+        if (epicOptional.isEmpty()) {
+            throw new EpicNotFoundException("Epic not found");
+        }
+
+        Epic epic = epicOptional.get();
+        epic.setName(epicDto.name());
+        return epicRepository.save(epic);
     }
 }
