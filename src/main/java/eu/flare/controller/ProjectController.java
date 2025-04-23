@@ -9,6 +9,7 @@ import eu.flare.model.Project;
 import eu.flare.model.dto.AddEpicsDto;
 import eu.flare.model.dto.AddMembersDto;
 import eu.flare.model.dto.EmptyProjectDto;
+import eu.flare.model.dto.RenameProjectDto;
 import eu.flare.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -86,6 +87,18 @@ public class ProjectController {
         try {
             Project project = projectService.addProjectMembers(id, dto);
             return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new UpdateProjectResponse(project));
+        } catch (ProjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ProjectNotFoundResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/rename")
+    public ResponseEntity<Object> renameProject(@RequestBody RenameProjectDto dto, @PathVariable("id") long id) {
+        try {
+            Project project = projectService.renameProject(id, dto);
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new UpdateProjectResponse(project));
         } catch (ProjectNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

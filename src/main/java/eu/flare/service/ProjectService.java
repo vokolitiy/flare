@@ -9,6 +9,7 @@ import eu.flare.model.User;
 import eu.flare.model.dto.AddEpicsDto;
 import eu.flare.model.dto.AddMembersDto;
 import eu.flare.model.dto.EmptyProjectDto;
+import eu.flare.model.dto.RenameProjectDto;
 import eu.flare.repository.ProjectRepository;
 import eu.flare.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +102,16 @@ public class ProjectService {
         });
 
         project.setProjectMembers(users);
+        return projectRepository.save(project);
+    }
+
+    public Project renameProject(long id, RenameProjectDto dto) throws ProjectNotFoundException {
+        Optional<Project> projectOptional = projectRepository.findById(id);
+        if (projectOptional.isEmpty()) {
+            throw new ProjectNotFoundException("Project not found");
+        }
+        Project project = projectOptional.get();
+        project.setName(dto.newProjectName());
         return projectRepository.save(project);
     }
 }
