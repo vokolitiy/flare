@@ -7,6 +7,7 @@ import java.util.List;
 public abstract class DataSeeder {
 
     private DataSeeder nextSeeder;
+    private boolean isDone;
     protected final JpaRepository repository;
 
     public DataSeeder(JpaRepository repository) {
@@ -18,8 +19,9 @@ public abstract class DataSeeder {
     }
 
     public void seedData(List<String> data) {
-        if (!data.isEmpty()) {
+        if (!data.isEmpty() && !isDone) {
             createDataIfNotExists(data);
+            isDone = true;
         }
         if (nextSeeder != null) {
             nextSeeder.seedData(data);

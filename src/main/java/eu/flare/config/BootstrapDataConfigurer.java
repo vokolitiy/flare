@@ -141,7 +141,6 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
         storyResolutionSeeder.setNextSeeder(taskProgressSeeder);
         taskProgressSeeder.setNextSeeder(taskPrioritySeeder);
         taskPrioritySeeder.setNextSeeder(taskResolutionSeeder);
-        taskResolutionSeeder.setNextSeeder(null);
 
         return storyProgressSeeder;
     }
