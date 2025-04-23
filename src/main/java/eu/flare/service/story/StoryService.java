@@ -1,13 +1,15 @@
-package eu.flare.service;
+package eu.flare.service.story;
 
-import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.exceptions.conflicts.TasksNamesConflictException;
-import eu.flare.model.*;
+import eu.flare.exceptions.notfound.StoryNotFoundException;
+import eu.flare.model.Story;
+import eu.flare.model.Task;
+import eu.flare.model.User;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
-import eu.flare.repository.StoryRepository;
-import eu.flare.repository.TaskRepository;
 import eu.flare.repository.UserRepository;
+import eu.flare.repository.story.StoryRepository;
+import eu.flare.repository.task.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

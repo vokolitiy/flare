@@ -1,9 +1,9 @@
 package eu.flare.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.exceptions.notfound.EpicNotFoundException;
-import eu.flare.exceptions.empty.RequestBodyEmptyException;
 import eu.flare.exceptions.conflicts.StoryNamesConflictException;
+import eu.flare.exceptions.empty.RequestBodyEmptyException;
+import eu.flare.exceptions.notfound.EpicNotFoundException;
 import eu.flare.model.Epic;
 import eu.flare.model.dto.add.AddStoryDto;
 import eu.flare.model.dto.rename.RenameEpicDto;

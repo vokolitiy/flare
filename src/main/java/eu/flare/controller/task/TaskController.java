@@ -1,10 +1,10 @@
-package eu.flare.controller;
+package eu.flare.controller.task;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.exceptions.notfound.TaskNotFoundException;
 import eu.flare.model.Task;
 import eu.flare.model.dto.rename.RenameTaskDto;
-import eu.flare.service.TaskService;
+import eu.flare.service.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

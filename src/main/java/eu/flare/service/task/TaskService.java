@@ -1,9 +1,9 @@
-package eu.flare.service;
+package eu.flare.service.task;
 
 import eu.flare.exceptions.notfound.TaskNotFoundException;
 import eu.flare.model.Task;
 import eu.flare.model.dto.rename.RenameTaskDto;
-import eu.flare.repository.TaskRepository;
+import eu.flare.repository.task.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
 package eu.flare.service;
 
-import eu.flare.model.User;
 import eu.flare.model.Privilege;
 import eu.flare.model.Role;
+import eu.flare.model.User;
 import eu.flare.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,12 @@
-package eu.flare.controller;
+package eu.flare.controller.story;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.exceptions.conflicts.TasksNamesConflictException;
+import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.Story;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
-import eu.flare.service.StoryService;
+import eu.flare.service.story.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

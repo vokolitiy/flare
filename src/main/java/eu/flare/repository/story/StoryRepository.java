@@ -1,4 +1,4 @@
-package eu.flare.repository;
+package eu.flare.repository.story;
 
 import eu.flare.model.Story;
 import org.springframework.data.jpa.repository.JpaRepository;

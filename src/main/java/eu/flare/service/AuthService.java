@@ -1,7 +1,7 @@
 package eu.flare.service;
 
-import eu.flare.model.User;
 import eu.flare.model.Role;
+import eu.flare.model.User;
 import eu.flare.model.dto.LoginDto;
 import eu.flare.model.dto.SignupDto;
 import eu.flare.repository.UserRepository;

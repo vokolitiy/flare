@@ -1,7 +1,9 @@
 package eu.flare.model.dto.add;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.model.*;
+import eu.flare.model.TaskPriority;
+import eu.flare.model.TaskProgress;
+import eu.flare.model.User;
 import jakarta.validation.constraints.NotBlank;
 
 public record AddTaskDto(
