@@ -1,14 +1,17 @@
 package eu.flare.service;
 
 import eu.flare.exceptions.conflicts.EpicNamesConflictException;
+import eu.flare.exceptions.conflicts.SprintNamesConflictsException;
 import eu.flare.exceptions.empty.EpicsEmptyException;
 import eu.flare.exceptions.notfound.ProjectNotFoundException;
 import eu.flare.model.Epic;
 import eu.flare.model.Project;
+import eu.flare.model.Sprint;
 import eu.flare.model.User;
 import eu.flare.model.dto.EmptyProjectDto;
 import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
+import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
 import eu.flare.repository.ProjectRepository;
 import eu.flare.repository.UserRepository;
@@ -20,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -113,5 +118,36 @@ public class ProjectService {
         Project project = projectOptional.get();
         project.setName(dto.newProjectName());
         return projectRepository.save(project);
+    }
+
+    public Project createSprintForProject(long id, AddSprintDto dto) throws ProjectNotFoundException, SprintNamesConflictsException {
+        Optional<Project> projectOptional = projectRepository.findById(id);
+        if (projectOptional.isEmpty()) {
+            throw new ProjectNotFoundException("Project not found");
+        }
+        Project project = projectOptional.get();
+        List<Sprint> projectSprints = project.getSprints();
+        String newSprintName = dto.name();
+        if (!projectSprints.isEmpty()) {
+            List<Sprint> filteredSprints = projectSprints.stream().filter(sprint -> sprint.getName().equals(newSprintName)).collect(Collectors.toList());
+            if (!filteredSprints.isEmpty()) {
+                throw new SprintNamesConflictsException("Sprint with such name already exists");
+            } else {
+                projectSprints.addAll(createSprintObjects(newSprintName));
+                project.setSprints(projectSprints);
+                return projectRepository.save(project);
+            }
+        } else {
+            project.setSprints(createSprintObjects(newSprintName));
+            return projectRepository.save(project);
+        }
+    }
+
+    private List<Sprint> createSprintObjects(String name) {
+        List<Sprint> sprints = new ArrayList<>();
+        Sprint sprint = new Sprint();
+        sprint.setName(name);
+        sprints.add(sprint);
+        return sprints;
     }
 }

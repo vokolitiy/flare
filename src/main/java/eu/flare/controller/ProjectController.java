@@ -2,6 +2,7 @@ package eu.flare.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.exceptions.conflicts.EpicNamesConflictException;
+import eu.flare.exceptions.conflicts.SprintNamesConflictsException;
 import eu.flare.exceptions.empty.EpicsEmptyException;
 import eu.flare.exceptions.notfound.ProjectNotFoundException;
 import eu.flare.model.Epic;
@@ -9,6 +10,7 @@ import eu.flare.model.Project;
 import eu.flare.model.dto.EmptyProjectDto;
 import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
+import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
 import eu.flare.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +108,21 @@ public class ProjectController {
         }
     }
 
+    @PutMapping("/{id}/sprints/add")
+    public ResponseEntity<Object> createProjectSprint(@RequestBody AddSprintDto dto, @PathVariable("id") long id) {
+        try {
+            Project project = projectService.createSprintForProject(id, dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new UpdateProjectResponse(project));
+        } catch (ProjectNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ProjectNotFoundResponse(e.getMessage()));
+        } catch (SprintNamesConflictsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new SprintNamesConflictsResponse(e.getMessage()));
+        }
+    }
+
     private record CreateProjectErrorResponse(@JsonProperty("error") String errorMessage) { }
     private record CreateProjectResponse(@JsonProperty("project") Project project) { }
     private record EpicsNotFoundResponse(@JsonProperty("error") String error){}
@@ -121,5 +138,8 @@ public class ProjectController {
     ){}
     private record UpdateProjectResponse(
             @JsonProperty("project") Project project
+    ){}
+    private record SprintNamesConflictsResponse(
+            @JsonProperty("error") String error
     ){}
 }

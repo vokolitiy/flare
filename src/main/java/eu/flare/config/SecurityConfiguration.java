@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/project/{id}/epics/add").authenticated()
                     .requestMatchers("/api/v1/project/{id}/members/add").authenticated()
                     .requestMatchers("/api/v1/project/{id}/rename").authenticated()
+                    .requestMatchers("/api/v1/project/{id}/sprints/add").authenticated()
                     .requestMatchers("/api/v1/epic").authenticated()
                     .requestMatchers("/api/v1/epic/{id}/stories/add").authenticated()
                     .requestMatchers("/api/v1/epic/{id}/rename").authenticated()

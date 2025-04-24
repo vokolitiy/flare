@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,10 @@ public class Project {
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<User> projectMembers;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "sprint_id")
+    private List<Sprint> sprints;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Epic> epics;
@@ -55,5 +60,13 @@ public class Project {
 
     public long getId() {
         return id;
+    }
+
+    public List<Sprint> getSprints() {
+        return sprints;
+    }
+
+    public void setSprints(List<Sprint> sprints) {
+        this.sprints = sprints;
     }
 }
