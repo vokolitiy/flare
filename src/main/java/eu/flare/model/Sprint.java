@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "sprints")
@@ -24,6 +25,10 @@ public class Sprint {
     private Date completeDate;
 
     private boolean isCompleted;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "story_id", referencedColumnName = "id")
+    private List<Story> sprintStories;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "board_id", referencedColumnName = "id")
