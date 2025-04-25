@@ -25,4 +25,12 @@ public class Backlog {
     public void setBacklogStories(List<Story> backlogStories) {
         this.backlogStories = backlogStories;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

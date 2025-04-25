@@ -36,6 +36,10 @@ public class Project {
     @JsonManagedReference
     private List<Epic> epics;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "backlog_id", referencedColumnName = "id")
+    private Backlog backlog;
+
     public String getName() {
         return name;
     }
@@ -70,5 +74,13 @@ public class Project {
 
     public void setSprints(List<Sprint> sprints) {
         this.sprints = sprints;
+    }
+
+    public Backlog getBacklog() {
+        return backlog;
+    }
+
+    public void setBacklog(Backlog backlog) {
+        this.backlog = backlog;
     }
 }

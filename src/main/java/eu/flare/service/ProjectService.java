@@ -1,19 +1,19 @@
 package eu.flare.service;
 
+import eu.flare.exceptions.conflicts.BacklogAlreadyExistsException;
 import eu.flare.exceptions.conflicts.EpicNamesConflictException;
 import eu.flare.exceptions.conflicts.ProjectNameConflictException;
 import eu.flare.exceptions.conflicts.SprintNamesConflictsException;
 import eu.flare.exceptions.empty.EpicsEmptyException;
 import eu.flare.exceptions.notfound.ProjectNotFoundException;
-import eu.flare.model.Epic;
-import eu.flare.model.Project;
-import eu.flare.model.Sprint;
-import eu.flare.model.User;
+import eu.flare.model.*;
 import eu.flare.model.dto.EmptyProjectDto;
+import eu.flare.model.dto.add.AddBacklogDto;
 import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
 import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
+import eu.flare.repository.BacklogRepository;
 import eu.flare.repository.EpicRepository;
 import eu.flare.repository.ProjectRepository;
 import eu.flare.repository.UserRepository;
@@ -36,16 +36,19 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final EpicRepository epicRepository;
+    private final BacklogRepository backlogRepository;
 
     @Autowired
     public ProjectService(
             ProjectRepository projectRepository,
             UserRepository userRepository,
-            EpicRepository epicRepository
+            EpicRepository epicRepository,
+            BacklogRepository backlogRepository
     ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.epicRepository = epicRepository;
+        this.backlogRepository = backlogRepository;
     }
 
     public Optional<Project> findProject(String name) {
@@ -161,6 +164,24 @@ public class ProjectService {
             project.setSprints(createSprintObjects(newSprintName));
             return projectRepository.save(project);
         }
+    }
+
+    public Project createBacklogForProject(long id, AddBacklogDto dto) throws ProjectNotFoundException, BacklogAlreadyExistsException {
+        Optional<Project> projectOptional = projectRepository.findById(id);
+        if (projectOptional.isEmpty()) {
+            throw new ProjectNotFoundException("Project is not found");
+        }
+        Project project = projectOptional.get();
+        Backlog projectBacklog = project.getBacklog();
+        if (projectBacklog != null) {
+            throw new BacklogAlreadyExistsException("Backlog for project already exists");
+        }
+        String backlogName = dto.name();
+        Backlog backlog = new Backlog();
+        backlog.setName(backlogName);
+        project.setBacklog(backlog);
+
+        return projectRepository.save(project);
     }
 
     private List<Sprint> createSprintObjects(String name) {
