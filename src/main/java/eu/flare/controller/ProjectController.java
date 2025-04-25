@@ -2,6 +2,7 @@ package eu.flare.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.exceptions.conflicts.EpicNamesConflictException;
+import eu.flare.exceptions.conflicts.ProjectNameConflictException;
 import eu.flare.exceptions.conflicts.SprintNamesConflictsException;
 import eu.flare.exceptions.empty.EpicsEmptyException;
 import eu.flare.exceptions.notfound.ProjectNotFoundException;
@@ -45,9 +46,14 @@ public class ProjectController {
     public ResponseEntity<Object> createEmptyProject(@RequestBody EmptyProjectDto dto) {
         boolean isRequestBodyValid = projectService.validateCreateProjectBody(dto);
         if (isRequestBodyValid) {
-            Project project = projectService.createEmptyProject(dto);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new CreateProjectResponse(project));
+            try {
+                Project project = projectService.createEmptyProject(dto);
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new CreateProjectResponse(project));
+            } catch (ProjectNameConflictException e) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ProjectNameConflictResponse(e.getMessage()));
+            }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new CreateProjectErrorResponse("Request body is not valid"));
@@ -142,4 +148,7 @@ public class ProjectController {
     private record SprintNamesConflictsResponse(
             @JsonProperty("error") String error
     ){}
+    private record ProjectNameConflictResponse(
+            @JsonProperty("error") String error
+    ) {}
 }

@@ -26,7 +26,7 @@ public class Sprint {
 
     private boolean isCompleted;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "story_id", referencedColumnName = "id")
     private List<Story> sprintStories;
 

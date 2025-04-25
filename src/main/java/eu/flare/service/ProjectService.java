@@ -1,6 +1,7 @@
 package eu.flare.service;
 
 import eu.flare.exceptions.conflicts.EpicNamesConflictException;
+import eu.flare.exceptions.conflicts.ProjectNameConflictException;
 import eu.flare.exceptions.conflicts.SprintNamesConflictsException;
 import eu.flare.exceptions.empty.EpicsEmptyException;
 import eu.flare.exceptions.notfound.ProjectNotFoundException;
@@ -13,6 +14,7 @@ import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
 import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
+import eu.flare.repository.EpicRepository;
 import eu.flare.repository.ProjectRepository;
 import eu.flare.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -32,11 +35,17 @@ public class ProjectService {
     private static final int MAX_PROJECT_NAME_LENGTH = 30;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final EpicRepository epicRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
+    public ProjectService(
+            ProjectRepository projectRepository,
+            UserRepository userRepository,
+            EpicRepository epicRepository
+    ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.epicRepository = epicRepository;
     }
 
     public Optional<Project> findProject(String name) {
@@ -47,11 +56,16 @@ public class ProjectService {
         return !dto.name().isEmpty() && dto.name().length() <= MAX_PROJECT_NAME_LENGTH;
     }
 
-    public Project createEmptyProject(EmptyProjectDto dto) {
-        String projectName = dto.name();
-        Project project = new Project();
-        project.setName(projectName);
-        return projectRepository.save(project);
+    public Project createEmptyProject(EmptyProjectDto dto) throws ProjectNameConflictException {
+        String newProjectName = dto.name();
+        Optional<Project> projectOptional = projectRepository.findByName(newProjectName);
+        if (projectOptional.isEmpty()) {
+            Project project = new Project();
+            project.setName(newProjectName);
+            return projectRepository.save(project);
+        } else {
+            throw new ProjectNameConflictException("Project name is already taken");
+        }
     }
 
     public List<Epic> findEpics(long id) {
@@ -82,12 +96,12 @@ public class ProjectService {
                 throw new EpicNamesConflictException("Unable to create project epics due to a names conflict");
             } else {
                 project.setEpics(epicsToAdd);
-                return projectRepository.save(project);
             }
         } else {
             project.setEpics(epicsToAdd);
-            return projectRepository.save(project);
         }
+        addProjectToEpic(epicsToAdd, project);
+        return projectRepository.save(project);
     }
 
     public Project addProjectMembers(long id, List<AddMembersDto> dto) throws ProjectNotFoundException {
@@ -103,10 +117,16 @@ public class ProjectService {
                 throw new UsernameNotFoundException("User not found");
             }
             User appUser = userOptional.get();
-            users.add(appUser);
+            List<User> filteredUsers = project.getProjectMembers().stream()
+                    .filter(user -> user.getUsername().equals(appUser.getUsername())).collect(Collectors.toList());
+            if (filteredUsers.isEmpty()) {
+                users.add(appUser);
+            }
         });
 
-        project.setProjectMembers(users);
+        if (!users.isEmpty()) {
+            project.setProjectMembers(users);
+        }
         return projectRepository.save(project);
     }
 
@@ -149,5 +169,12 @@ public class ProjectService {
         sprint.setName(name);
         sprints.add(sprint);
         return sprints;
+    }
+
+    private void addProjectToEpic(List<Epic> epics, Project project) {
+        epics.forEach(epic -> {
+            epic.setProject(project);
+            epicRepository.save(epic);
+        });
     }
 }

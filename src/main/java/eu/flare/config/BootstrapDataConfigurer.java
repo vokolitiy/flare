@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Configuration
-@Transactional
 public class BootstrapDataConfigurer implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserRepository userRepository;
@@ -69,6 +68,7 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
 
     @Override
     @SuppressWarnings("unchecked")
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (alreadySetup) return;
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
@@ -89,18 +89,21 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
         if (adminRole.isEmpty()) {
             return;
         }
-        User user = new User();
-        user.setFirstName("admin");
-        user.setLastName("admin");
-        user.setUsername("admin");
-        user.setPassword(passwordEncoder.encode("admin"));
-        user.setEmail("admin@admin.com");
-        user.setCredentialsNonExpired(true);
-        user.setAccountNonExpired(true);
-        user.setAccountNonLocked(true);
-        user.setRoles(List.of(adminRole.get()));
-        user.setEnabled(true);
-        userRepository.save(user);
+        Optional<User> userOptional = userRepository.findByUsername("admin_admin");
+        if (userOptional.isEmpty()) {
+            User user = new User();
+            user.setFirstName("admin_admin");
+            user.setLastName("admin_admin");
+            user.setUsername("admin_admin");
+            user.setPassword(passwordEncoder.encode("admin_admin"));
+            user.setEmail("email@admin.com");
+            user.setCredentialsNonExpired(true);
+            user.setAccountNonExpired(true);
+            user.setAccountNonLocked(true);
+            user.setRoles(List.of(adminRole.get()));
+            user.setEnabled(true);
+            userRepository.save(user);
+        }
 
         alreadySetup = true;
     }
