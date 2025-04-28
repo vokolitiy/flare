@@ -62,6 +62,8 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/storyPriority").authenticated()
                     .requestMatchers("/api/v1/storyProgress").authenticated()
                     .requestMatchers("/api/v1/storyResolution").authenticated()
+                    .requestMatchers("/api/v1/backlog").authenticated()
+                    .requestMatchers("/api/v1/backlog/{id}/stories/add").authenticated()
                     .anyRequest().permitAll();
         });
         httpSecurity.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);

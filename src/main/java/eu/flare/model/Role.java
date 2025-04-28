@@ -39,4 +39,8 @@ public class Role {
     public void setPrivileges(List<Privilege> privileges) {
         this.privileges = privileges;
     }
+
+    public long getId() {
+        return id;
+    }
 }

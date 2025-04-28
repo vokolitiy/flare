@@ -137,4 +137,8 @@ public class User implements UserDetails {
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
     }
+
+    public long getId() {
+        return id;
+    }
 }

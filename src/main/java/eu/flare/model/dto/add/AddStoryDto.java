@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 public record AddStoryDto(
-        @JsonProperty("name") @NotBlank(message = "Name is mandatory") String name,
+        @JsonProperty("name") String name,
         @JsonProperty("description") String description,
         @JsonProperty("completion_date") long estimatedCompletionDate,
         @JsonProperty("original_estimate") long originalEstimate,
