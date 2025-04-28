@@ -1,5 +1,6 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -46,6 +47,14 @@ public class User implements UserDetails {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "story_id")
     private Story storyWatchers;
+
+    @OneToOne
+    @JsonBackReference
+    private Story storyAssignee;
+
+    @OneToOne
+    @JsonBackReference
+    private Story storyCreator;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -140,5 +149,21 @@ public class User implements UserDetails {
 
     public long getId() {
         return id;
+    }
+
+    public Story getStoryAssignee() {
+        return storyAssignee;
+    }
+
+    public void setStoryAssignee(Story storyAssignee) {
+        this.storyAssignee = storyAssignee;
+    }
+
+    public Story getStoryCreator() {
+        return storyCreator;
+    }
+
+    public void setStoryCreator(Story storyCreator) {
+        this.storyCreator = storyCreator;
     }
 }

@@ -1,5 +1,6 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,10 @@ public class StoryProgress {
     @Column(unique = true, nullable = false, length = 15)
     private String name;
 
+    @OneToOne
+    @JsonBackReference
+    private Story storyProgress;
+
     public String getName() {
         return name;
     }
@@ -21,5 +26,13 @@ public class StoryProgress {
 
     public long getId() {
         return id;
+    }
+
+    public Story getStoryProgress() {
+        return storyProgress;
+    }
+
+    public void setStoryProgress(Story storyProgress) {
+        this.storyProgress = storyProgress;
     }
 }

@@ -15,10 +15,10 @@ public record AddStoryDto(
         @JsonProperty("original_estimate") long originalEstimate,
         @JsonProperty("remaining_estimate") long remainingEstimate,
         @JsonProperty("story_points") int storyPoints,
-        @JsonProperty("story_priority") StoryPriority storyPriority,
-        @JsonProperty("story_progress") StoryProgress storyProgress,
-        @JsonProperty("story_creator") User storyCreator,
-        @JsonProperty("story_assignee") User storyAssignee,
-        @JsonProperty("story_watchers") List<User> storyWatchers
+        @JsonProperty("story_priority") String storyPriorityName,
+        @JsonProperty("story_progress") String storyProgressName,
+        @JsonProperty("story_creator") String storyCreatorName,
+        @JsonProperty("story_assignee") String storyAssigneeName,
+        @JsonProperty("story_watchers") List<String> storyWatcherNames
         ){
 }
