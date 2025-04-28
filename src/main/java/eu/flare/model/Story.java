@@ -36,24 +36,24 @@ public class Story {
 
     private int storyPoints;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_priority_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyPriority", orphanRemoval = true)
+    @JsonManagedReference
     private StoryPriority storyPriority;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_progress_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyProgress", orphanRemoval = true)
+    @JsonManagedReference
     private StoryProgress storyProgress;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_creator_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyCreator", orphanRemoval = true)
+    @JsonManagedReference
     private User storyCreator;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "story_resolution_id", referencedColumnName = "id")
     private StoryResolution storyResolution;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_assignee_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyAssignee", orphanRemoval = true)
+    @JsonManagedReference
     private User storyAssignee;
 
     @OneToMany(mappedBy = "storyWatchers", cascade = CascadeType.ALL)

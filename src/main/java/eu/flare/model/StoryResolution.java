@@ -11,6 +11,9 @@ public class StoryResolution {
     @Column(unique = true, nullable = false, length = 15)
     private String name;
 
+    @OneToOne(mappedBy = "storyResolution")
+    private Story storyResolution;
+
     public String getName() {
         return name;
     }
@@ -21,5 +24,13 @@ public class StoryResolution {
 
     public long getId() {
         return id;
+    }
+
+    public Story getStoryResolution() {
+        return storyResolution;
+    }
+
+    public void setStoryResolution(Story storyResolution) {
+        this.storyResolution = storyResolution;
     }
 }
