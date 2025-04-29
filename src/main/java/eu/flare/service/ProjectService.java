@@ -26,8 +26,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProjectService {
@@ -86,16 +88,18 @@ public class ProjectService {
             throw new ProjectNotFoundException("Project with given name %s not found".formatted(id));
         }
         Project project = projectOptional.get();
-        List<Epic> epicsToAdd = dto.epics();
-        if (epicsToAdd.isEmpty()) {
+        List<String> epicNames = dto.epicNames();
+        if (epicNames.isEmpty()) {
             throw new EpicsEmptyException("Unable to add empty epics");
         }
         List<Epic> projectEpics = project.getEpics();
+        List<Epic> epicsToAdd = createEpics(dto);
         if (!projectEpics.isEmpty()) {
-            List<Epic> combined = projectEpics.stream()
-                    .filter(two -> epicsToAdd.stream().anyMatch(one -> one.getName().equals(two.getName())))
+            List<String> epicNamesCombined = projectEpics.stream()
+                    .map(Epic::getName)
+                    .filter(two -> epicNames.stream().anyMatch(one -> one.equals(two)))
                     .toList();
-            if (!combined.isEmpty()) {
+            if (!epicNamesCombined.isEmpty()) {
                 throw new EpicNamesConflictException("Unable to create project epics due to a names conflict");
             } else {
                 project.setEpics(epicsToAdd);
@@ -182,6 +186,14 @@ public class ProjectService {
         project.setBacklog(backlog);
 
         return projectRepository.save(project);
+    }
+
+    private List<Epic> createEpics(AddEpicsDto dtos) {
+        return dtos.epicNames().stream().map(name -> {
+            Epic epic = new Epic();
+            epic.setName(name);
+            return epic;
+        }).collect(Collectors.toList());
     }
 
     private List<Sprint> createSprintObjects(String name) {
