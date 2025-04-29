@@ -116,25 +116,32 @@ public class ProjectService {
         if (projectOptional.isEmpty()) {
             throw new ProjectNotFoundException("Project not found");
         }
-        Project project = projectOptional.get();
-        List<User> users = new ArrayList<>();
-        dto.forEach(addMember -> {
-            Optional<User> userOptional = userRepository.findByUsername(addMember.username());
-            if (userOptional.isEmpty()) {
-                throw new UsernameNotFoundException("User not found");
-            }
-            User appUser = userOptional.get();
-            List<User> filteredUsers = project.getProjectMembers().stream()
-                    .filter(user -> user.getUsername().equals(appUser.getUsername())).collect(Collectors.toList());
-            if (filteredUsers.isEmpty()) {
-                users.add(appUser);
-            }
-        });
 
-        if (!users.isEmpty()) {
-            project.setProjectMembers(users);
+        Project project = projectOptional.get();
+        List<User> projectMembers = project.getProjectMembers();
+        if (projectMembers.isEmpty()) {
+            List<User> freshProjectMembers = bulkAddProjectMembers(dto);
+            project.setProjectMembers(freshProjectMembers);
+            return projectRepository.save(project);
+        } else {
+            List<String> combined = dto.stream().map(AddMembersDto::username)
+                    .filter(username -> projectMembers.stream().noneMatch(user -> user.getUsername().equals(username)))
+                    .toList();
+            if (!combined.isEmpty()) {
+                List<User> freshProjectMembers = combined.stream().map(username -> {
+                    Optional<User> userOptional = userRepository.findByUsername(username);
+                    if (userOptional.isEmpty()) {
+                        throw new UsernameNotFoundException("User not found");
+                    }
+                    return userOptional.get();
+                }).toList();
+                projectMembers.addAll(freshProjectMembers);
+                project.setProjectMembers(projectMembers);
+                return projectRepository.save(project);
+            }
         }
-        return projectRepository.save(project);
+
+        return project;
     }
 
     public Project renameProject(long id, RenameProjectDto dto) throws ProjectNotFoundException {
@@ -209,5 +216,14 @@ public class ProjectService {
             epic.setProject(project);
             epicRepository.save(epic);
         });
+    }
+    private List<User> bulkAddProjectMembers(List<AddMembersDto> dto) {
+        return dto.stream().map(addMembersDto -> {
+            Optional<User> userOptional = userRepository.findByUsername(addMembersDto.username());
+            if (userOptional.isEmpty()) {
+                throw new UsernameNotFoundException("Username not found");
+            }
+            return userOptional.get();
+        }).collect(Collectors.toList());
     }
 }
