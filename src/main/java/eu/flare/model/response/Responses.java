@@ -15,4 +15,22 @@ public final class Responses {
             @JsonProperty("middle_name") String middleName,
             @JsonProperty("last_name") String lastName
     ){}
+
+    public record UserLoggedInResponse(
+            @JsonProperty("token") String token,
+            @JsonProperty("expiresIn") long expiry
+    ) {
+    }
+
+    public record SignupRequestValidationErrorResponse(@JsonProperty("error") String reason) {
+    }
+
+    public record UsernameExistsErrorResponse(@JsonProperty("error") String reason) {
+    }
+
+    public record LoginRequestValidationErrorResponse(@JsonProperty("error") String reason) {
+    }
+
+    public record UserNotFoundErrorResponse(@JsonProperty("error") String error) {
+    }
 }

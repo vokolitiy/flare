@@ -1,6 +1,5 @@
 package eu.flare.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.exceptions.conflicts.EmailAlreadyExistsException;
 import eu.flare.model.Role;
 import eu.flare.model.User;
@@ -37,12 +36,12 @@ public class AuthController {
         boolean isBodyValid = authService.validateRequestBody(signupDto);
         if (!isBodyValid) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new SignupRequestValidationError("Request body is invalid"));
+                    .body(new Responses.SignupRequestValidationErrorResponse("Request body is invalid"));
         } else {
             boolean userExists = authService.userExists(signupDto);
             if (userExists) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new UsernameExistsError("User creation failed, invalid user name"));
+                        .body(new Responses.UsernameExistsErrorResponse("User creation failed, invalid user name"));
             } else {
                 boolean emailExists = authService.emailExists(signupDto);
                 if (!emailExists) {
@@ -60,7 +59,7 @@ public class AuthController {
                         throw new EmailAlreadyExistsException("Invalid email address");
                     } catch (EmailAlreadyExistsException e) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body(new SignupRequestValidationError(e.getMessage()));
+                                .body(new Responses.SignupRequestValidationErrorResponse(e.getMessage()));
                     }
                 }
             }
@@ -72,37 +71,19 @@ public class AuthController {
         boolean isBodyValid = authService.validateRequestBody(loginDto);
         if (!isBodyValid) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new LoginRequestValidationError("Request body is invalid"));
+                    .body(new Responses.LoginRequestValidationErrorResponse("Request body is invalid"));
         } else {
             boolean userExists = authService.userExists(loginDto);
             if (!userExists) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new UserNotFoundError("User not found"));
+                        .body(new Responses.UserNotFoundErrorResponse("User not found"));
             } else {
                 User user = authService.authenticate(loginDto);
                 String token = jwtService.generateToken(user.getUsername(), user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
-                LoginResponse response = new LoginResponse(token, jwtService.getJwtExpiration());
+                Responses.UserLoggedInResponse response = new Responses.UserLoggedInResponse(token, jwtService.getJwtExpiration());
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(response);
             }
         }
-    }
-
-    private record SignupRequestValidationError(@JsonProperty("error") String reason) {
-    }
-
-    private record UsernameExistsError(@JsonProperty("error") String reason) {
-    }
-
-    private record LoginRequestValidationError(@JsonProperty("error") String reason) {
-    }
-
-    private record UserNotFoundError(@JsonProperty("error") String error) {
-    }
-
-    private record LoginResponse(
-            @JsonProperty("token") String token,
-            @JsonProperty("expiresIn") long expiry
-    ) {
     }
 }
