@@ -13,10 +13,7 @@ import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
 import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
-import eu.flare.repository.BacklogRepository;
-import eu.flare.repository.EpicRepository;
-import eu.flare.repository.ProjectRepository;
-import eu.flare.repository.UserRepository;
+import eu.flare.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -26,8 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProjectService {
@@ -36,6 +35,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final EpicRepository epicRepository;
+    private final SprintRepository sprintRepository;
     private final BacklogRepository backlogRepository;
 
     @Autowired
@@ -43,11 +43,13 @@ public class ProjectService {
             ProjectRepository projectRepository,
             UserRepository userRepository,
             EpicRepository epicRepository,
+            SprintRepository sprintRepository,
             BacklogRepository backlogRepository
     ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.epicRepository = epicRepository;
+        this.sprintRepository = sprintRepository;
         this.backlogRepository = backlogRepository;
     }
 
@@ -86,25 +88,30 @@ public class ProjectService {
             throw new ProjectNotFoundException("Project with given name %s not found".formatted(id));
         }
         Project project = projectOptional.get();
-        List<Epic> epicsToAdd = dto.epics();
-        if (epicsToAdd.isEmpty()) {
+        List<String> epicNames = dto.epicNames();
+        if (epicNames.isEmpty()) {
             throw new EpicsEmptyException("Unable to add empty epics");
         }
         List<Epic> projectEpics = project.getEpics();
+        List<Epic> epicsToAdd = createEpics(dto);
         if (!projectEpics.isEmpty()) {
-            List<Epic> combined = projectEpics.stream()
-                    .filter(two -> epicsToAdd.stream().anyMatch(one -> one.getName().equals(two.getName())))
+            List<String> epicNamesCombined = projectEpics.stream()
+                    .map(Epic::getName)
+                    .filter(two -> epicNames.stream().anyMatch(one -> one.equals(two)))
                     .toList();
-            if (!combined.isEmpty()) {
+            if (!epicNamesCombined.isEmpty()) {
                 throw new EpicNamesConflictException("Unable to create project epics due to a names conflict");
             } else {
                 project.setEpics(epicsToAdd);
             }
+            addProjectToEpic(epicsToAdd, project);
         } else {
-            project.setEpics(epicsToAdd);
+            projectEpics.addAll(epicsToAdd);
+            project.setEpics(projectEpics);
+            addProjectToEpic(projectEpics, project);
         }
-        addProjectToEpic(epicsToAdd, project);
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+        return findProject(savedProject.getName()).get();
     }
 
     public Project addProjectMembers(long id, List<AddMembersDto> dto) throws ProjectNotFoundException {
@@ -112,25 +119,32 @@ public class ProjectService {
         if (projectOptional.isEmpty()) {
             throw new ProjectNotFoundException("Project not found");
         }
-        Project project = projectOptional.get();
-        List<User> users = new ArrayList<>();
-        dto.forEach(addMember -> {
-            Optional<User> userOptional = userRepository.findByUsername(addMember.username());
-            if (userOptional.isEmpty()) {
-                throw new UsernameNotFoundException("User not found");
-            }
-            User appUser = userOptional.get();
-            List<User> filteredUsers = project.getProjectMembers().stream()
-                    .filter(user -> user.getUsername().equals(appUser.getUsername())).collect(Collectors.toList());
-            if (filteredUsers.isEmpty()) {
-                users.add(appUser);
-            }
-        });
 
-        if (!users.isEmpty()) {
-            project.setProjectMembers(users);
+        Project project = projectOptional.get();
+        List<User> projectMembers = project.getProjectMembers();
+        if (projectMembers.isEmpty()) {
+            List<User> freshProjectMembers = bulkAddProjectMembers(dto);
+            project.setProjectMembers(freshProjectMembers);
+            return projectRepository.save(project);
+        } else {
+            List<String> combined = dto.stream().map(AddMembersDto::username)
+                    .filter(username -> projectMembers.stream().noneMatch(user -> user.getUsername().equals(username)))
+                    .toList();
+            if (!combined.isEmpty()) {
+                List<User> freshProjectMembers = combined.stream().map(username -> {
+                    Optional<User> userOptional = userRepository.findByUsername(username);
+                    if (userOptional.isEmpty()) {
+                        throw new UsernameNotFoundException("User not found");
+                    }
+                    return userOptional.get();
+                }).toList();
+                projectMembers.addAll(freshProjectMembers);
+                project.setProjectMembers(projectMembers);
+                return projectRepository.save(project);
+            }
         }
-        return projectRepository.save(project);
+
+        return project;
     }
 
     public Project renameProject(long id, RenameProjectDto dto) throws ProjectNotFoundException {
@@ -149,39 +163,50 @@ public class ProjectService {
             throw new ProjectNotFoundException("Project not found");
         }
         Project project = projectOptional.get();
-        List<Sprint> projectSprints = project.getSprints();
-        String newSprintName = dto.name();
-        if (!projectSprints.isEmpty()) {
-            List<Sprint> filteredSprints = projectSprints.stream().filter(sprint -> sprint.getName().equals(newSprintName)).collect(Collectors.toList());
-            if (!filteredSprints.isEmpty()) {
-                throw new SprintNamesConflictsException("Sprint with such name already exists");
+        Optional<Sprint> sprintOptional = sprintRepository.findByName(dto.name());
+        if (sprintOptional.isEmpty()) {
+            List<Sprint> projectSprints = project.getSprints();
+            if (projectSprints.isEmpty()) {
+                project.setSprints(createSprintObjects(dto.name()));
             } else {
-                projectSprints.addAll(createSprintObjects(newSprintName));
+                projectSprints.addAll(createSprintObjects(dto.name()));
                 project.setSprints(projectSprints);
-                return projectRepository.save(project);
             }
-        } else {
-            project.setSprints(createSprintObjects(newSprintName));
             return projectRepository.save(project);
+        } else {
+            throw new SprintNamesConflictsException("Sprint already exists");
         }
     }
 
     public Project createBacklogForProject(long id, AddBacklogDto dto) throws ProjectNotFoundException, BacklogAlreadyExistsException {
-        Optional<Project> projectOptional = projectRepository.findById(id);
-        if (projectOptional.isEmpty()) {
-            throw new ProjectNotFoundException("Project is not found");
-        }
-        Project project = projectOptional.get();
-        Backlog projectBacklog = project.getBacklog();
-        if (projectBacklog != null) {
-            throw new BacklogAlreadyExistsException("Backlog for project already exists");
-        }
-        String backlogName = dto.name();
-        Backlog backlog = new Backlog();
-        backlog.setName(backlogName);
-        project.setBacklog(backlog);
+        Optional<Backlog> backlogOptional = backlogRepository.findByName(dto.name());
+        if (backlogOptional.isEmpty()) {
+            Optional<Project> projectOptional = projectRepository.findById(id);
+            if (projectOptional.isEmpty()) {
+                throw new ProjectNotFoundException("Project is not found");
+            }
+            Project project = projectOptional.get();
+            Backlog projectBacklog = project.getBacklog();
+            if (projectBacklog != null) {
+                throw new BacklogAlreadyExistsException("Backlog for project already exists");
+            }
+            String backlogName = dto.name();
+            Backlog backlog = new Backlog();
+            backlog.setName(backlogName);
+            project.setBacklog(backlog);
 
-        return projectRepository.save(project);
+            return projectRepository.save(project);
+        } else {
+            throw new BacklogAlreadyExistsException("Backlog already exists");
+        }
+    }
+
+    private List<Epic> createEpics(AddEpicsDto dtos) {
+        return dtos.epicNames().stream().map(name -> {
+            Epic epic = new Epic();
+            epic.setName(name);
+            return epic;
+        }).collect(Collectors.toList());
     }
 
     private List<Sprint> createSprintObjects(String name) {
@@ -197,5 +222,14 @@ public class ProjectService {
             epic.setProject(project);
             epicRepository.save(epic);
         });
+    }
+    private List<User> bulkAddProjectMembers(List<AddMembersDto> dto) {
+        return dto.stream().map(addMembersDto -> {
+            Optional<User> userOptional = userRepository.findByUsername(addMembersDto.username());
+            if (userOptional.isEmpty()) {
+                throw new UsernameNotFoundException("Username not found");
+            }
+            return userOptional.get();
+        }).collect(Collectors.toList());
     }
 }

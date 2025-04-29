@@ -6,6 +6,6 @@ import eu.flare.model.Epic;
 import java.util.List;
 
 public record AddEpicsDto(
-        @JsonProperty("epics") List<Epic> epics
+        @JsonProperty("epics") List<String> epicNames
 ) {
 }

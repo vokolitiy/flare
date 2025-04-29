@@ -27,7 +27,7 @@ public class Epic {
     private List<Story> stories;
 
     @ManyToOne
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     @JsonBackReference
     private Project project;
 
