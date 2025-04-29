@@ -2,6 +2,8 @@ package eu.flare.config;
 
 import eu.flare.repository.UserRepository;
 import eu.flare.service.UserDetailsServiceImpl;
+import eu.flare.service.validation.UserValidatorVisitor;
+import eu.flare.service.validation.UserValidatorVisitorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,11 @@ public class AppConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public UserValidatorVisitor validatorVisitor() {
+        return new UserValidatorVisitorImpl(userRepository);
     }
 
     @Bean

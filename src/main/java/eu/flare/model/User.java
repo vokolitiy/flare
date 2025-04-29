@@ -166,4 +166,12 @@ public class User implements UserDetails {
     public void setStoryCreator(Story storyCreator) {
         this.storyCreator = storyCreator;
     }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
 }
