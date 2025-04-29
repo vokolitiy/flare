@@ -13,10 +13,7 @@ import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
 import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
-import eu.flare.repository.BacklogRepository;
-import eu.flare.repository.EpicRepository;
-import eu.flare.repository.ProjectRepository;
-import eu.flare.repository.UserRepository;
+import eu.flare.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,6 +35,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final EpicRepository epicRepository;
+    private final SprintRepository sprintRepository;
     private final BacklogRepository backlogRepository;
 
     @Autowired
@@ -45,11 +43,13 @@ public class ProjectService {
             ProjectRepository projectRepository,
             UserRepository userRepository,
             EpicRepository epicRepository,
+            SprintRepository sprintRepository,
             BacklogRepository backlogRepository
     ) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.epicRepository = epicRepository;
+        this.sprintRepository = sprintRepository;
         this.backlogRepository = backlogRepository;
     }
 
@@ -163,20 +163,18 @@ public class ProjectService {
             throw new ProjectNotFoundException("Project not found");
         }
         Project project = projectOptional.get();
-        List<Sprint> projectSprints = project.getSprints();
-        String newSprintName = dto.name();
-        if (!projectSprints.isEmpty()) {
-            List<Sprint> filteredSprints = projectSprints.stream().filter(sprint -> sprint.getName().equals(newSprintName)).collect(Collectors.toList());
-            if (!filteredSprints.isEmpty()) {
-                throw new SprintNamesConflictsException("Sprint with such name already exists");
+        Optional<Sprint> sprintOptional = sprintRepository.findByName(dto.name());
+        if (sprintOptional.isEmpty()) {
+            List<Sprint> projectSprints = project.getSprints();
+            if (projectSprints.isEmpty()) {
+                project.setSprints(createSprintObjects(dto.name()));
             } else {
-                projectSprints.addAll(createSprintObjects(newSprintName));
+                projectSprints.addAll(createSprintObjects(dto.name()));
                 project.setSprints(projectSprints);
-                return projectRepository.save(project);
             }
-        } else {
-            project.setSprints(createSprintObjects(newSprintName));
             return projectRepository.save(project);
+        } else {
+            throw new SprintNamesConflictsException("Sprint already exists");
         }
     }
 
