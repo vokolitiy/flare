@@ -104,11 +104,14 @@ public class ProjectService {
             } else {
                 project.setEpics(epicsToAdd);
             }
+            addProjectToEpic(epicsToAdd, project);
         } else {
-            project.setEpics(epicsToAdd);
+            projectEpics.addAll(epicsToAdd);
+            project.setEpics(projectEpics);
+            addProjectToEpic(projectEpics, project);
         }
-        addProjectToEpic(epicsToAdd, project);
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+        return findProject(savedProject.getName()).get();
     }
 
     public Project addProjectMembers(long id, List<AddMembersDto> dto) throws ProjectNotFoundException {
