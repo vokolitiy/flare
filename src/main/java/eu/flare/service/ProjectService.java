@@ -179,21 +179,26 @@ public class ProjectService {
     }
 
     public Project createBacklogForProject(long id, AddBacklogDto dto) throws ProjectNotFoundException, BacklogAlreadyExistsException {
-        Optional<Project> projectOptional = projectRepository.findById(id);
-        if (projectOptional.isEmpty()) {
-            throw new ProjectNotFoundException("Project is not found");
-        }
-        Project project = projectOptional.get();
-        Backlog projectBacklog = project.getBacklog();
-        if (projectBacklog != null) {
-            throw new BacklogAlreadyExistsException("Backlog for project already exists");
-        }
-        String backlogName = dto.name();
-        Backlog backlog = new Backlog();
-        backlog.setName(backlogName);
-        project.setBacklog(backlog);
+        Optional<Backlog> backlogOptional = backlogRepository.findByName(dto.name());
+        if (backlogOptional.isEmpty()) {
+            Optional<Project> projectOptional = projectRepository.findById(id);
+            if (projectOptional.isEmpty()) {
+                throw new ProjectNotFoundException("Project is not found");
+            }
+            Project project = projectOptional.get();
+            Backlog projectBacklog = project.getBacklog();
+            if (projectBacklog != null) {
+                throw new BacklogAlreadyExistsException("Backlog for project already exists");
+            }
+            String backlogName = dto.name();
+            Backlog backlog = new Backlog();
+            backlog.setName(backlogName);
+            project.setBacklog(backlog);
 
-        return projectRepository.save(project);
+            return projectRepository.save(project);
+        } else {
+            throw new BacklogAlreadyExistsException("Backlog already exists");
+        }
     }
 
     private List<Epic> createEpics(AddEpicsDto dtos) {
