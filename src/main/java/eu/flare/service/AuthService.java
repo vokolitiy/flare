@@ -5,6 +5,7 @@ import eu.flare.model.User;
 import eu.flare.model.dto.LoginDto;
 import eu.flare.model.dto.SignupDto;
 import eu.flare.repository.UserRepository;
+import eu.flare.service.validation.UserValidatorVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,14 +21,21 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final UserValidatorVisitor validatorVisitor;
 
     private static final int MIN_USERNAME_LENGTH = 5;
 
     @Autowired
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            UserValidatorVisitor validatorVisitor
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.validatorVisitor = validatorVisitor;
     }
 
     public boolean validateRequestBody(LoginDto loginDto) {
@@ -42,8 +50,16 @@ public class AuthService {
                 && !signupDto.lastName().isEmpty();
     }
 
-    public boolean checkIfUserExists(String username) {
-        return userRepository.findByUsername(username).isPresent();
+    public boolean userExists(SignupDto signupDto) {
+        return validatorVisitor.visitSignupValidation(signupDto);
+    }
+
+    public boolean userExists(LoginDto loginDto) {
+        return validatorVisitor.visitLoginValidation(loginDto);
+    }
+
+    public boolean emailExists(SignupDto signupDto) {
+        return validatorVisitor.visitEmailValidation(signupDto);
     }
 
     public User createNewUser(SignupDto signupDto) {

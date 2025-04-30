@@ -5,19 +5,9 @@
   "original_estimate": 100,
   "remaining_estimate": 50,
   "story_points": 10,
-  "story_priority": {
-    "name": "MAJOR"
-  },
-  "story_progress": {
-    "name": "TODO"
-  },
-  "story_creator": {
-    "username": "Testsub"
-  },
-  "story_assignee": {
-    "username": "Testsub"
-  },
-  "story_watchers": [{
-    "username": "Testsub"
-  }]
+  "story_priority": "MAJOR",
+  "story_progress": "TODO",
+  "story_creator": "Testsub",
+  "story_assignee":"Testsub",
+  "story_watchers": ["Testsub"]
 }]

@@ -1,9 +1,9 @@
 package eu.flare.controller.task;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.exceptions.notfound.TaskNotFoundException;
 import eu.flare.model.Task;
 import eu.flare.model.dto.rename.RenameTaskDto;
+import eu.flare.model.response.Responses;
 import eu.flare.service.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public class TaskController {
     public ResponseEntity<Object> findTask(@RequestParam("name") String name) {
         Optional<Task> taskOptional = taskService.findTask(name);
         return taskOptional.<ResponseEntity<Object>>map(task -> ResponseEntity.status(HttpStatus.OK)
-                .body(new TaskResponse(task))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new TaskNotFoundResponse("Task not found")));
+                .body(new Responses.TaskResponse(task))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new Responses.TaskNotFoundResponse("Task not found")));
     }
 
     @PutMapping("/{id}/rename")
@@ -36,14 +36,10 @@ public class TaskController {
         try {
             Task task = taskService.renameTask(id, dto);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new TaskUpdatedResponse(task));
+                    .body(new Responses.TaskUpdatedResponse(task));
         } catch (TaskNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new TaskNotFoundResponse(e.getMessage()));
+                    .body(new Responses.TaskNotFoundResponse(e.getMessage()));
         }
     }
-
-    private record TaskNotFoundResponse(@JsonProperty("error") String error){}
-    private record TaskResponse(@JsonProperty("task") Task task) {}
-    private record TaskUpdatedResponse(@JsonProperty("task") Task task) {}
 }

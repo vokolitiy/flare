@@ -1,6 +1,8 @@
 package eu.flare.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -61,6 +63,8 @@ public class User implements UserDetails {
         return List.of();
     }
 
+    @JsonIgnore
+    @JsonProperty(value = "password")
     @Override
     public String getPassword() {
         return password;
@@ -131,6 +135,8 @@ public class User implements UserDetails {
         return enabled;
     }
 
+    @JsonIgnore
+    @JsonProperty(value = "email")
     public String getEmail() {
         return email;
     }
@@ -165,5 +171,13 @@ public class User implements UserDetails {
 
     public void setStoryCreator(Story storyCreator) {
         this.storyCreator = storyCreator;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 }

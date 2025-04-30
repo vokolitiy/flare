@@ -34,6 +34,11 @@ public class Story {
     @JsonBackReference
     private Epic epic;
 
+    @ManyToOne
+    @JoinColumn(name = "backlog_id")
+    @JsonBackReference
+    private Backlog backlog;
+
     private int storyPoints;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyPriority", orphanRemoval = true)
@@ -185,5 +190,13 @@ public class Story {
 
     public void setStoryTasks(List<Task> storyTasks) {
         this.storyTasks = storyTasks;
+    }
+
+    public Backlog getBacklog() {
+        return backlog;
+    }
+
+    public void setBacklog(Backlog backlog) {
+        this.backlog = backlog;
     }
 }

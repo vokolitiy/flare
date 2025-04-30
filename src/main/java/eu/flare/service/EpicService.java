@@ -6,6 +6,7 @@ import eu.flare.exceptions.notfound.EpicNotFoundException;
 import eu.flare.model.*;
 import eu.flare.model.dto.add.AddStoryDto;
 import eu.flare.model.dto.rename.RenameEpicDto;
+import eu.flare.repository.BacklogRepository;
 import eu.flare.repository.EpicRepository;
 import eu.flare.repository.UserRepository;
 import eu.flare.repository.story.StoryPriorityRepository;
@@ -16,14 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class EpicService {
@@ -33,6 +30,7 @@ public class EpicService {
     private final StoryRepository storyRepository;
     private final StoryPriorityRepository storyPriorityRepository;
     private final StoryProgressRepository storyProgressRepository;
+    private final BacklogRepository backlogRepository;
 
     @Autowired
     public EpicService(
@@ -40,13 +38,15 @@ public class EpicService {
             UserRepository userRepository,
             StoryRepository storyRepository,
             StoryPriorityRepository storyPriorityRepository,
-            StoryProgressRepository storyProgressRepository
+            StoryProgressRepository storyProgressRepository,
+            BacklogRepository backlogRepository
     ) {
         this.epicRepository = epicRepository;
         this.userRepository = userRepository;
         this.storyRepository = storyRepository;
         this.storyPriorityRepository = storyPriorityRepository;
         this.storyProgressRepository = storyProgressRepository;
+        this.backlogRepository = backlogRepository;
     }
 
     public Epic addStoriesForEpic(long id, List<AddStoryDto> dto) throws EpicNotFoundException, RequestBodyEmptyException, UsernameNotFoundException, StoryNamesConflictException {
