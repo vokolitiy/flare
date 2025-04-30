@@ -1,5 +1,6 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -14,8 +15,8 @@ public class Backlog {
     @Column(unique = true, nullable = false, length = 150)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "backlog")
+    @JsonManagedReference
     private List<Story> backlogStories;
 
     public List<Story> getBacklogStories() {
