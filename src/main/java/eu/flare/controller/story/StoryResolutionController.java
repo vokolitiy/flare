@@ -1,7 +1,7 @@
 package eu.flare.controller.story;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.StoryResolution;
+import eu.flare.model.response.Responses;
 import eu.flare.service.story.StoryResolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,10 @@ public class StoryResolutionController {
         List<StoryResolution> storyResolutions = storyResolutionService.findStoryResolutions();
         if (storyResolutions.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StoryResolutionsNotFoundResponse("Story resolutions not found"));
+                    .body(new Responses.StoryResolutionsNotFoundResponse("Story resolutions not found"));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new StoryResolutionsResponse(storyResolutions));
+                    .body(new Responses.StoryResolutionsResponse(storyResolutions));
         }
     }
-
-    private record StoryResolutionsNotFoundResponse(@JsonProperty("error") String error){}
-    private record StoryResolutionsResponse(@JsonProperty("resolutions") List<StoryResolution> resolutions){}
 }

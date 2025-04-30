@@ -1,7 +1,7 @@
 package eu.flare.controller.story;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.StoryProgress;
+import eu.flare.model.response.Responses;
 import eu.flare.service.story.StoryProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,10 @@ public class StoryProgressController {
         List<StoryProgress> storyProgresses = storyProgressService.findStoryProgresses();
         if (storyProgresses.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StoryProgressesNotFoundResponse("Story progresses not found"));
+                    .body(new Responses.StoryProgressesNotFoundResponse("Story progresses not found"));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new StoryProgressesResponse(storyProgresses));
+                    .body(new Responses.StoryProgressesResponse(storyProgresses));
         }
     }
-
-    private record StoryProgressesNotFoundResponse(@JsonProperty("error") String error){}
-    private record StoryProgressesResponse(@JsonProperty("progresses") List<StoryProgress> progresses){}
 }

@@ -1,7 +1,7 @@
 package eu.flare.controller.task;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.TaskProgress;
+import eu.flare.model.response.Responses;
 import eu.flare.service.task.TaskProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,10 @@ public class TaskProgressController {
         List<TaskProgress> taskProgresses = taskProgressService.findTaskProgresses();
         if (taskProgresses.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new TaskProgressesNotFoundResponse("Task progresses not found"));
+                    .body(new Responses.TaskProgressesNotFoundResponse("Task progresses not found"));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new TaskProgressesResponse(taskProgresses));
+                    .body(new Responses.TaskProgressesResponse(taskProgresses));
         }
     }
-
-    private record TaskProgressesNotFoundResponse(@JsonProperty("error") String error){}
-    private record TaskProgressesResponse(@JsonProperty("priorities") List<TaskProgress> progresses) {}
 }

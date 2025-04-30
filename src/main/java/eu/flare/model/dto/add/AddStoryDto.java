@@ -1,10 +1,6 @@
 package eu.flare.model.dto.add;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.model.StoryPriority;
-import eu.flare.model.StoryProgress;
-import eu.flare.model.User;
-import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 

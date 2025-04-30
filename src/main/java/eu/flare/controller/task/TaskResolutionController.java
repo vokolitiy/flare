@@ -1,7 +1,7 @@
 package eu.flare.controller.task;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.TaskResolution;
+import eu.flare.model.response.Responses;
 import eu.flare.service.task.TaskResolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,10 @@ public class TaskResolutionController {
         List<TaskResolution> taskResolutions = taskResolutionService.findTaskResolutions();
         if (taskResolutions.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new TaskResolutionsNotFoundResponse("Task resolutions not found"));
+                    .body(new Responses.TaskResolutionsNotFoundResponse("Task resolutions not found"));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new TaskResolutionsResponse(taskResolutions));
+                    .body(new Responses.TaskResolutionsResponse(taskResolutions));
         }
     }
-
-    private record TaskResolutionsNotFoundResponse(@JsonProperty("error") String error){}
-    private record TaskResolutionsResponse(@JsonProperty("resolutions") List<TaskResolution> resolutions) {}
 }

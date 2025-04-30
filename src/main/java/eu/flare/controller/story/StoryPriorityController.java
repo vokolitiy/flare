@@ -1,7 +1,7 @@
 package eu.flare.controller.story;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.StoryPriority;
+import eu.flare.model.response.Responses;
 import eu.flare.service.story.StoryPriorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,10 @@ public class StoryPriorityController {
         List<StoryPriority> storyPriorities = storyPriorityService.findStoryPriorities();
         if (storyPriorities.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new StoryPrioritiesNotFoundResponse("Story priorities not found"));
+                    .body(new Responses.StoryPrioritiesNotFoundResponse("Story priorities not found"));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new StoryPrioritiesResponse(storyPriorities));
+                    .body(new Responses.StoryPrioritiesResponse(storyPriorities));
         }
     }
-
-    private record StoryPrioritiesNotFoundResponse(@JsonProperty("error") String error){}
-    private record StoryPrioritiesResponse(@JsonProperty("priorities") List<StoryPriority> priorities){}
 }

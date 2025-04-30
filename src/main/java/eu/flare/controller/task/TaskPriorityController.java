@@ -1,7 +1,7 @@
 package eu.flare.controller.task;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.TaskPriority;
+import eu.flare.model.response.Responses;
 import eu.flare.service.task.TaskPriorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,10 @@ public class TaskPriorityController {
         List<TaskPriority> priorities = taskPriorityService.findPriorities();
         if (priorities.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new TaskPrioritiesNotFoundResponse("Task priories not found"));
+                    .body(new Responses.TaskPrioritiesNotFoundResponse("Task priories not found"));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new TaskPrioritiesResponse(priorities));
+                    .body(new Responses.TaskPrioritiesResponse(priorities));
         }
     }
-
-    private record TaskPrioritiesNotFoundResponse(@JsonProperty("error") String error){}
-    private record TaskPrioritiesResponse(@JsonProperty("priorities") List<TaskPriority> priorities) {}
 }

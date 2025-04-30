@@ -1,11 +1,10 @@
 package eu.flare.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.exceptions.notfound.BacklogNotFoundException;
 import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.Backlog;
-import eu.flare.model.Epic;
 import eu.flare.model.dto.add.AddBacklogStoryDto;
+import eu.flare.model.response.Responses;
 import eu.flare.service.BacklogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,8 +29,8 @@ public class BacklogController {
     public ResponseEntity<Object> findBacklog(@RequestParam("name") String name) {
         Optional<Backlog> backlog = backlogService.findBacklog(name);
         return backlog.<ResponseEntity<Object>>map(value -> ResponseEntity.status(HttpStatus.OK)
-                .body(new BacklogResponse(value))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new BacklogNotFoundResponse("Backlog not found")));
+                .body(new Responses.BacklogResponse(value))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new Responses.BacklogNotFoundResponse("Backlog not found")));
     }
 
     @PutMapping("/{id}/stories/add")
@@ -39,15 +38,12 @@ public class BacklogController {
         try {
             Backlog backlog = backlogService.addStoriesToBacklog(id, dtoList);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new BacklogResponse(backlog));
+                    .body(new Responses.BacklogResponse(backlog));
         } catch (BacklogNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new BacklogNotFoundResponse(e.getMessage()));
+                    .body(new Responses.BacklogNotFoundResponse(e.getMessage()));
         } catch (StoryNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
-
-    private record BacklogResponse(@JsonProperty("backlog") Backlog backlog) {}
-    private record BacklogNotFoundResponse(@JsonProperty("error") String error) {}
 }
