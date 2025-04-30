@@ -31,7 +31,7 @@ public class Project {
     @JoinColumn(name = "sprint_id")
     private List<Sprint> sprints;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project")
     @JsonManagedReference
     private List<Epic> epics;
 

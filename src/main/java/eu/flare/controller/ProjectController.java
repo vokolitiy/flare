@@ -17,6 +17,7 @@ import eu.flare.model.dto.rename.RenameProjectDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,16 +71,16 @@ public class ProjectController {
                     .body(new Responses.EpicsNotFoundResponse(MessageFormat.format("Project {0} does not have any epics", Long.toString(id))));
         } else {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new Responses.ProjectWithEpicsResponse(Long.toString(id), epics));
+                    .body(new Responses.ProjectWithEpicsResponse(projectService.findProject(id).get().getName(), epics));
         }
     }
 
     @PutMapping("/{id}/epics/add")
     public ResponseEntity<Object> addEpics(@RequestBody AddEpicsDto dto, @PathVariable("id") long id) {
         try {
-            Project project = projectService.addProjectEpics(id, dto);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new Responses.ProjectWithEpicsResponse(project.getName(), project.getEpics()));
+            Pair<String, List<Epic>> epics = projectService.addProjectEpics(id, dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new Responses.ProjectWithEpicsResponse(epics.getFirst(), epics.getSecond()));
         } catch (EpicNamesConflictException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new Responses.ProjectWithEpicsErrorResponse(e.getMessage()));
