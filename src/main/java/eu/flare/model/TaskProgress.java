@@ -11,6 +11,9 @@ public class TaskProgress {
     @Column(unique = true, nullable = false, length = 15)
     private String name;
 
+    @OneToOne
+    private Task taskProgress;
+
     public String getName() {
         return name;
     }
@@ -21,5 +24,9 @@ public class TaskProgress {
 
     public long getId() {
         return id;
+    }
+
+    public void setTaskProgress(Task taskProgress) {
+        this.taskProgress = taskProgress;
     }
 }

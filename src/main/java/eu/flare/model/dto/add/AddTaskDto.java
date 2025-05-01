@@ -1,9 +1,6 @@
 package eu.flare.model.dto.add;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.model.TaskPriority;
-import eu.flare.model.TaskProgress;
-import eu.flare.model.User;
 import jakarta.validation.constraints.NotBlank;
 
 public record AddTaskDto(
@@ -13,9 +10,9 @@ public record AddTaskDto(
         @JsonProperty("original_estimate") @NotBlank long originalEstimate,
         @JsonProperty("remaining_estimate") @NotBlank long remainingEstimate,
         @JsonProperty("story_points") @NotBlank int storyPoints,
-        @JsonProperty("task_priority") @NotBlank TaskPriority taskPriority,
-        @JsonProperty("task_progress") @NotBlank TaskProgress taskProgress,
-        @JsonProperty("task_creator") @NotBlank User taskCreator,
-        @JsonProperty("task_assignee") @NotBlank  User taskAssignee
+        @JsonProperty("task_priority") @NotBlank String taskPriority,
+        @JsonProperty("task_progress") @NotBlank String taskProgress,
+        @JsonProperty("task_creator") @NotBlank String taskCreator,
+        @JsonProperty("task_assignee") @NotBlank  String taskAssignee
 ){
 }

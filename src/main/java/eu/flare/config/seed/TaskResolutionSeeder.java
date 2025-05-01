@@ -2,19 +2,23 @@ package eu.flare.config.seed;
 
 import eu.flare.model.TaskResolution;
 import eu.flare.repository.task.TaskResolutionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class TaskResolutionSeeder extends DataSeeder {
+@Component
+public class TaskResolutionSeeder {
 
-    public TaskResolutionSeeder(TaskResolutionRepository repository) {
-        super(repository);
+    private TaskResolutionRepository taskResolutionRepository;
+
+    @Autowired
+    public TaskResolutionSeeder(TaskResolutionRepository taskResolutionRepository) {
+        this.taskResolutionRepository = taskResolutionRepository;
     }
 
-    @Override
     public void createDataIfNotExists(List<String> data) {
-        TaskResolutionRepository taskResolutionRepository = (TaskResolutionRepository) repository;
         data.forEach(item -> {
             Optional<TaskResolution> taskResolutionOptional = taskResolutionRepository.findByName(item);
             if (taskResolutionOptional.isEmpty()) {

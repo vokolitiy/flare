@@ -31,13 +31,13 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
-    private final StoryProgressRepository storyProgressRepository;
-    private final StoryPriorityRepository storyPriorityRepository;
-    private final StoryResolutionRepository storyResolutionRepository;
-    private final TaskProgressRepository taskProgressRepository;
-    private final TaskPriorityRepository taskPriorityRepository;
-    private final TaskResolutionRepository taskResolutionRepository;
     private final PasswordEncoder passwordEncoder;
+    private final StoryPrioritySeeder storyPrioritySeeder;
+    private final StoryProgressSeeder storyProgressSeeder;
+    private final StoryResolutionSeeder storyResolutionSeeder;
+    private final TaskPrioritySeeder taskPrioritySeeder;
+    private final TaskProgressSeeder taskProgressSeeder;
+    private final TaskResolutionSeeder taskResolutionSeeder;
 
     private boolean alreadySetup = false;
 
@@ -46,24 +46,24 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
             UserRepository userRepository,
             RoleRepository roleRepository,
             PrivilegeRepository privilegeRepository,
-            StoryProgressRepository storyProgressRepository,
-            StoryPriorityRepository storyPriorityRepository,
-            StoryResolutionRepository storyResolutionRepository,
-            TaskProgressRepository taskProgressRepository,
-            TaskPriorityRepository taskPriorityRepository,
-            TaskResolutionRepository taskResolutionRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            StoryPrioritySeeder storyPrioritySeeder,
+            StoryProgressSeeder storyProgressSeeder,
+            StoryResolutionSeeder storyResolutionSeeder,
+            TaskPrioritySeeder taskPrioritySeeder,
+            TaskProgressSeeder taskProgressSeeder,
+            TaskResolutionSeeder taskResolutionSeeder
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
-        this.storyProgressRepository = storyProgressRepository;
-        this.storyPriorityRepository = storyPriorityRepository;
-        this.storyResolutionRepository = storyResolutionRepository;
-        this.taskProgressRepository = taskProgressRepository;
-        this.taskPriorityRepository = taskPriorityRepository;
-        this.taskResolutionRepository = taskResolutionRepository;
         this.passwordEncoder = passwordEncoder;
+        this.storyPrioritySeeder = storyPrioritySeeder;
+        this.storyProgressSeeder = storyProgressSeeder;
+        this.storyResolutionSeeder = storyResolutionSeeder;
+        this.taskPrioritySeeder = taskPrioritySeeder;
+        this.taskProgressSeeder = taskProgressSeeder;
+        this.taskResolutionSeeder = taskResolutionSeeder;
     }
 
     @Override
@@ -73,13 +73,13 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
         if (alreadySetup) return;
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-        DataSeeder seederChain = seederChain();
-        seederChain.seedData(List.of("Todo", "In Progress", "In review", "Done"));
-        seederChain.seedData(List.of("Minor", "Major", "Severe", "Blocker"));
-        seederChain.seedData(List.of("Done", "Will not fix"));
-        seederChain.seedData(List.of("Todo", "In Progress", "In review", "Done"));
-        seederChain.seedData(List.of("Minor", "Major", "Severe", "Blocker"));
-        seederChain.seedData(List.of("Done", "Will not fix"));
+        storyPrioritySeeder.createDataIfNotExists(List.of("Minor", "Major", "Severe", "Blocker"));
+        storyProgressSeeder.createDataIfNotExists(List.of("Todo", "In Progress", "In review", "Done"));
+        storyResolutionSeeder.createDataIfNotExists(List.of("Done", "Will not fix"));
+        taskPrioritySeeder.createDataIfNotExists(List.of("Minor", "Major", "Severe", "Blocker"));
+        taskProgressSeeder.createDataIfNotExists(List.of("Todo", "In Progress", "In review", "Done"));
+        taskResolutionSeeder.createDataIfNotExists(List.of("Done", "Will not fix"));
+
 
         List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege);
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
@@ -129,22 +129,5 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
             role.setPrivileges(privileges);
             roleRepository.save(role);
         }
-    }
-
-    private DataSeeder seederChain() {
-        DataSeeder storyProgressSeeder = new StoryProgressSeeder(storyProgressRepository);
-        DataSeeder storyPrioritySeeder = new StoryPrioritySeeder(storyPriorityRepository);
-        DataSeeder storyResolutionSeeder = new StoryResolutionSeeder(storyResolutionRepository);
-        DataSeeder taskProgressSeeder = new TaskProgressSeeder(taskProgressRepository);
-        DataSeeder taskPrioritySeeder = new TaskPrioritySeeder(taskPriorityRepository);
-        DataSeeder taskResolutionSeeder = new TaskResolutionSeeder(taskResolutionRepository);
-
-        storyProgressSeeder.setNextSeeder(storyPrioritySeeder);
-        storyPrioritySeeder.setNextSeeder(storyResolutionSeeder);
-        storyResolutionSeeder.setNextSeeder(taskProgressSeeder);
-        taskProgressSeeder.setNextSeeder(taskPrioritySeeder);
-        taskPrioritySeeder.setNextSeeder(taskResolutionSeeder);
-
-        return storyProgressSeeder;
     }
 }
