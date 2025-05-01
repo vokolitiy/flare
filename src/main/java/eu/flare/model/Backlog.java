@@ -15,7 +15,7 @@ public class Backlog {
     @Column(unique = true, nullable = false, length = 150)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "backlog")
+    @OneToMany(mappedBy = "backlog")
     @JsonManagedReference
     private List<Story> backlogStories;
 

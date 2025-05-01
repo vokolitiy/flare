@@ -10,8 +10,11 @@ import eu.flare.repository.story.StoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +48,47 @@ public class BacklogService {
             List<Story> storiesToAdd = dtoList.stream().map(addBacklogStoryDto -> {
                 Optional<Story> storyOptional = storyRepository.findById(addBacklogStoryDto.storyId());
                 if (storyOptional.isPresent()) {
-                    return storyOptional.get();
+                    Story story = storyOptional.get();
+                    story.setBacklog(backlog);
+                    return story;
+                } else {
+                    throw new IllegalStateException("Story not found");
+                }
+            }).collect(Collectors.toList());
+
+            backlog.setBacklogStories(storiesToAdd);
+            return backlogRepository.save(backlog);
+        } else {
+            List<AddBacklogStoryDto> filtered = new ArrayList<>();
+            for (AddBacklogStoryDto dto : dtoList) {
+                long storyId = dto.storyId();
+                backlogStories.stream()
+                        .filter(backlogStory -> backlogStory.getId() != storyId)
+                        .map(backlogStory -> dto)
+                        .forEach(filtered::add);
+            }
+            List<Story> freshStories = filtered.stream().map(addBacklogStoryDto -> {
+                Optional<Story> storyOptional = storyRepository.findById(addBacklogStoryDto.storyId());
+                if (storyOptional.isPresent()) {
+                    Story story = storyOptional.get();
+                    story.setBacklog(backlog);
+                    return story;
+                } else {
+                    throw new IllegalStateException("Story not found");
+                }
+            }).toList();
+            backlogStories.addAll(freshStories);
+            backlog.setBacklogStories(backlogStories);
+            return backlogRepository.save(backlog);
+        }
+        /*List<Story> backlogStories = backlog.getBacklogStories();
+        if (backlogStories.isEmpty()) {
+            List<Story> storiesToAdd = dtoList.stream().map(addBacklogStoryDto -> {
+                Optional<Story> storyOptional = storyRepository.findById(addBacklogStoryDto.storyId());
+                if (storyOptional.isPresent()) {
+                    Story story = storyOptional.get();
+                    story.setBacklog(backlog);
+                    return story;
                 } else {
                     throw new IllegalStateException("Story not found");
                 }
@@ -64,11 +107,13 @@ public class BacklogService {
                     } else {
                         throw new StoryNotFoundException("Story not found");
                     }
+                } else {
+                    backlog.setBacklogStories(backlogStories);
+                    return backlogRepository.save(backlog);
                 }
             }
-
-            backlog.setBacklogStories(backlogStories);
-            return backlogRepository.save(backlog);
         }
+        return backlog;
+    }*/
     }
 }
