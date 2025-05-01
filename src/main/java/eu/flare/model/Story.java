@@ -29,7 +29,7 @@ public class Story {
     private long originalEstimate;
     private long remainingEstimate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "epic_id")
     @JsonBackReference
     private Epic epic;

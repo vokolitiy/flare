@@ -22,7 +22,7 @@ public class Epic {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "epic", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "epic")
     @JsonManagedReference
     private List<Story> stories;
 

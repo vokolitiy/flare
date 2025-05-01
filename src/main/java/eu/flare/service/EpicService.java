@@ -17,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,21 +50,20 @@ public class EpicService {
     public Epic addStoriesForEpic(long id, List<AddStoryDto> dto) throws EpicNotFoundException, RequestBodyEmptyException, UsernameNotFoundException, StoryNamesConflictException {
         Optional<Epic> epicOptional = epicRepository.findById(id);
         if (epicOptional.isEmpty()) {
-            throw new EpicNotFoundException("Epic with given name %s not found".formatted(id));
+            throw new EpicNotFoundException("Epic with given id %s not found".formatted(id));
         }
         if (dto.isEmpty()) {
             throw new RequestBodyEmptyException("Request body is empty");
         }
         Epic epic = epicOptional.get();
-        List<String> storyNamesToAdd = dto.stream().map(AddStoryDto::name).collect(Collectors.toList());
-        List<String> allStories = storyRepository.findAll().stream().map(Story::getName).collect(Collectors.toList());
-        List<String> combined = allStories.stream()
-                .filter(two -> storyNamesToAdd.stream().anyMatch(one -> one.equals(two)))
-                .toList();
-        if (combined.isEmpty()) {
-            return createStoriesIfNotExist(dto, epic);
+        List<Story> stories = storyRepository.findAll();
+        Set<AddStoryDto> freshStories = dto.stream()
+                .filter(addStoryDto -> isFreshStory(addStoryDto, stories))
+                .collect(Collectors.toSet());
+        if (!freshStories.isEmpty()) {
+            return createStoriesIfNotExist(freshStories, epic);
         } else {
-            throw new StoryNamesConflictException("Story exists");
+            return epic;
         }
     }
 
@@ -85,22 +82,23 @@ public class EpicService {
         return epicRepository.save(epic);
     }
 
-    private Epic createStoriesIfNotExist(List<AddStoryDto> dto, Epic epic) {
-        List<Story> createdStories = dto.stream().map(addStoryDto ->  {
-            User creatorUser = findStoryCreator(addStoryDto);
-            User assigneeUser = findUserAssignee(addStoryDto);
+    private Epic createStoriesIfNotExist(Set<AddStoryDto> addStoryDto, Epic epic) {
+        List<Story> createdStories = addStoryDto.stream().map(addStory -> {
+            User creatorUser = findStoryCreator(addStory);
+            User assigneeUser = findUserAssignee(addStory);
             Story story = new Story();
-            story.setName(addStoryDto.name());
-            story.setDescription(addStoryDto.description());
-            story.setEstimatedCompletionDate(new Date(addStoryDto.estimatedCompletionDate()));
-            story.setOriginalEstimate(addStoryDto.originalEstimate());
-            story.setRemainingEstimate(addStoryDto.remainingEstimate());
-            story.setStoryPoints(addStoryDto.storyPoints());
-            story.setStoryPriority(findStoryPriority(addStoryDto));
-            story.setStoryProgress(findStoryProgress(addStoryDto));
-            story.setStoryCreator(findStoryCreator(addStoryDto));
-            story.setStoryAssignee(findUserAssignee(addStoryDto));
-            story.setStoryWatchers(findStoryWatchers(addStoryDto));
+            story.setName(addStory.name());
+            story.setDescription(addStory.description());
+            story.setEstimatedCompletionDate(new Date(addStory.estimatedCompletionDate()));
+            story.setOriginalEstimate(addStory.originalEstimate());
+            story.setRemainingEstimate(addStory.remainingEstimate());
+            story.setStoryPoints(addStory.storyPoints());
+            story.setStoryPriority(findStoryPriority(addStory));
+            story.setStoryProgress(findStoryProgress(addStory));
+            story.setStoryCreator(findStoryCreator(addStory));
+            story.setStoryAssignee(findUserAssignee(addStory));
+            story.setStoryWatchers(findStoryWatchers(addStory));
+            story.setEpic(epic);
 
             Story savedStory = storyRepository.save(story);
             if (creatorUser != null) {
@@ -115,14 +113,20 @@ public class EpicService {
             return savedStory;
         }).collect(Collectors.toList());
 
-        epic.setStories(createdStories);
-        Epic savedEpic = epicRepository.save(epic);
-        storyRepository.findAll()
-                .forEach(story -> {
-                    story.setEpic(savedEpic);
-                    storyRepository.save(story);
-                });
-        return savedEpic;
+        List<Story> stories = epic.getStories();
+        if (stories.isEmpty()) {
+            epic.setStories(createdStories);
+        } else {
+            List<Story> filtered = new ArrayList<>();
+            for (Story createdStory : createdStories) {
+                if (!stories.contains(createdStory)) {
+                    filtered.add(createdStory);
+                }
+            }
+            stories.addAll(filtered);
+            epic.setStories(stories);
+        }
+        return epicRepository.save(epic);
     }
 
     private StoryPriority findStoryPriority(AddStoryDto addStoryDto) {
@@ -152,5 +156,10 @@ public class EpicService {
                 .stream()
                 .map(name -> userRepository.findByUsername(name).orElse(null))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isFreshStory(AddStoryDto addStoryDto, List<Story> stories) {
+        return stories.stream().filter(story -> story.getName().equals(addStoryDto.name()))
+                .toList().isEmpty();
     }
 }
