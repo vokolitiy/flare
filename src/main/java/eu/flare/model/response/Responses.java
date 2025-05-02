@@ -2,6 +2,7 @@ package eu.flare.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.*;
+import eu.flare.model.dto.response.ResponsesDto;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public final class Responses {
     }
 
     public record CreateProjectErrorResponse(@JsonProperty("error") String errorMessage) { }
-    public record CreateProjectResponse(@JsonProperty("project") Project project) { }
+    public record CreateProjectResponse(@JsonProperty("project") ResponsesDto.CreateProjectResponseDto project) { }
     public record EpicsNotFoundResponse(@JsonProperty("error") String error){}
     public record ProjectNotFoundResponse(String message) { }
     public record SearchProjectByNameResponse(Project project) { }

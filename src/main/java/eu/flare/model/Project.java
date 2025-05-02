@@ -82,4 +82,16 @@ public class Project {
     public void setBacklog(Backlog backlog) {
         this.backlog = backlog;
     }
+
+    public Date getStartedAt() {
+        return startedAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Date getExpectedEndDate() {
+        return expectedEndDate;
+    }
 }

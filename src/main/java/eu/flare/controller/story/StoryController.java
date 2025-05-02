@@ -7,6 +7,7 @@ import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.story.StoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class StoryController {
     }
 
     @PutMapping("/{id}/tasks/add")
-    public ResponseEntity<Object> addTasks(@PathVariable("id") long id, @RequestBody List<AddTaskDto> addTaskDtos) {
+    public ResponseEntity<Object> addTasks(@PathVariable("id") long id, @Valid @RequestBody List<AddTaskDto> addTaskDtos) {
         try {
             Story story = storyService.createTasksForStory(id, addTaskDtos);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,7 +50,7 @@ public class StoryController {
     }
 
     @PutMapping("/{id}/rename")
-    public ResponseEntity<Object> renameStory(@PathVariable("id") long id, @RequestBody RenameStoryDto dto) {
+    public ResponseEntity<Object> renameStory(@PathVariable("id") long id, @Valid @RequestBody RenameStoryDto dto) {
         try {
             Story story = storyService.renameStory(id, dto);
             return ResponseEntity.status(HttpStatus.OK)

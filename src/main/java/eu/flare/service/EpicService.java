@@ -63,7 +63,7 @@ public class EpicService {
         if (!freshStories.isEmpty()) {
             return createStoriesIfNotExist(freshStories, epic);
         } else {
-            return epic;
+            throw new StoryNamesConflictException("Stories exist");
         }
     }
 

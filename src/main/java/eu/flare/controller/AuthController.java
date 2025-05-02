@@ -8,6 +8,7 @@ import eu.flare.model.dto.SignupDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.AuthService;
 import eu.flare.service.JwtService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> signup(@RequestBody SignupDto signupDto) {
+    public ResponseEntity<Object> signup(@Valid @RequestBody SignupDto signupDto) {
         boolean isBodyValid = authService.validateRequestBody(signupDto);
         if (!isBodyValid) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -67,7 +68,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginDto loginDto) {
         boolean isBodyValid = authService.validateRequestBody(loginDto);
         if (!isBodyValid) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

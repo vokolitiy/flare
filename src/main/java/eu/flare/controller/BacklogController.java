@@ -6,6 +6,7 @@ import eu.flare.model.Backlog;
 import eu.flare.model.dto.add.AddBacklogStoryDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.BacklogService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class BacklogController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> findBacklog(@RequestParam("name") String name) {
+    public ResponseEntity<Object> findBacklog(@Valid @RequestParam("name") String name) {
         Optional<Backlog> backlog = backlogService.findBacklog(name);
         return backlog.<ResponseEntity<Object>>map(value -> ResponseEntity.status(HttpStatus.OK)
                 .body(new Responses.BacklogResponse(value))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -34,7 +35,7 @@ public class BacklogController {
     }
 
     @PutMapping("/{id}/stories/add")
-    public ResponseEntity<Object> addStories(@PathVariable("id") long id, @RequestBody List<AddBacklogStoryDto> dtoList) {
+    public ResponseEntity<Object> addStories(@PathVariable("id") long id, @Valid @RequestBody List<AddBacklogStoryDto> dtoList) {
         try {
             Backlog backlog = backlogService.addStoriesToBacklog(id, dtoList);
             return ResponseEntity.status(HttpStatus.OK)
