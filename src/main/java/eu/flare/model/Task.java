@@ -1,6 +1,7 @@
 package eu.flare.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -27,29 +28,29 @@ public class Task {
     private long originalEstimate;
     private long remainingEstimate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "story_id")
     @JsonBackReference
     private Story storyTasks;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "task_priority_id")
+    @OneToOne(mappedBy = "taskPriority")
+    @JsonManagedReference
     private TaskPriority taskPriority;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "task_progress_id")
+    @OneToOne(mappedBy = "taskProgress")
+    @JsonManagedReference
     private TaskProgress taskProgress;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "task_resolution_id")
     private TaskResolution taskResolution;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "task_creator_id")
+    @OneToOne(mappedBy = "taskCreator")
+    @JsonManagedReference
     private User taskCreator;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "task_assignee_id")
+    @OneToOne(mappedBy = "taskAssignee")
+    @JsonManagedReference
     private User taskAssignee;
 
     public String getName() {

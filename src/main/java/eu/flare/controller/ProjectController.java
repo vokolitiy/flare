@@ -14,12 +14,15 @@ import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
 import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
+import eu.flare.model.dto.response.ResponsesDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.ProjectService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.MessageFormat;
@@ -46,13 +49,18 @@ public class ProjectController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createEmptyProject(@RequestBody EmptyProjectDto dto) {
+    public ResponseEntity<Object> createEmptyProject(@Valid @RequestBody EmptyProjectDto dto) {
         boolean isRequestBodyValid = projectService.validateCreateProjectBody(dto);
         if (isRequestBodyValid) {
             try {
                 Project project = projectService.createEmptyProject(dto);
                 return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new Responses.CreateProjectResponse(project));
+                        .body(new Responses.CreateProjectResponse(new ResponsesDto.CreateProjectResponseDto(
+                                project.getId(),
+                                project.getName(),
+                                project.getStartedAt(),
+                                project.getUpdatedAt()
+                        )));
             } catch (ProjectNameConflictException e) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new Responses.ProjectNameConflictResponse(e.getMessage()));
@@ -76,7 +84,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/epics/add")
-    public ResponseEntity<Object> addEpics(@RequestBody AddEpicsDto dto, @PathVariable("id") long id) {
+    public ResponseEntity<Object> addEpics(@Validated @RequestBody AddEpicsDto dto, @PathVariable("id") long id) {
         try {
             Pair<String, List<Epic>> epics = projectService.addProjectEpics(id, dto);
             return ResponseEntity.status(HttpStatus.OK)
@@ -94,7 +102,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/members/add")
-    public ResponseEntity<Object> addProjectMembers(@RequestBody List<AddMembersDto> dto, @PathVariable("id") long id) {
+    public ResponseEntity<Object> addProjectMembers(@Valid @RequestBody List<AddMembersDto> dto, @PathVariable("id") long id) {
         try {
             Project project = projectService.addProjectMembers(id, dto);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -106,7 +114,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/rename")
-    public ResponseEntity<Object> renameProject(@RequestBody RenameProjectDto dto, @PathVariable("id") long id) {
+    public ResponseEntity<Object> renameProject(@Valid @RequestBody RenameProjectDto dto, @PathVariable("id") long id) {
         try {
             Project project = projectService.renameProject(id, dto);
             return ResponseEntity.status(HttpStatus.OK)
@@ -118,7 +126,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/sprints/add")
-    public ResponseEntity<Object> createProjectSprint(@RequestBody AddSprintDto dto, @PathVariable("id") long id) {
+    public ResponseEntity<Object> createProjectSprint(@Valid @RequestBody AddSprintDto dto, @PathVariable("id") long id) {
         try {
             Project project = projectService.createSprintForProject(id, dto);
             return ResponseEntity.status(HttpStatus.OK)
@@ -133,7 +141,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/backlog/create")
-    public ResponseEntity<Object> createBacklogForProject(@PathVariable("id") long id, @RequestBody AddBacklogDto dto) {
+    public ResponseEntity<Object> createBacklogForProject(@PathVariable("id") long id, @Valid @RequestBody AddBacklogDto dto) {
         try {
             Project project = projectService.createBacklogForProject(id, dto);
             return ResponseEntity.status(HttpStatus.CREATED)

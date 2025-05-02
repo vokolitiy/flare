@@ -8,10 +8,12 @@ import eu.flare.model.dto.add.AddStoryDto;
 import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.EpicService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +39,7 @@ public class EpicController {
     }
 
     @PutMapping("/{id}/stories/add")
-    public ResponseEntity<Object> addStories(@PathVariable("id") long id, @RequestBody List<AddStoryDto> dtos) {
+    public ResponseEntity<Object> addStories(@PathVariable("id") long id, @Validated @RequestBody List<AddStoryDto> dtos) {
         try {
             Epic epic = epicService.addStoriesForEpic(id, dtos);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -58,7 +60,7 @@ public class EpicController {
     }
 
     @PutMapping("/{id}/rename")
-    public ResponseEntity<Object> renameEpic(@PathVariable("id") long id, @RequestBody RenameEpicDto epicDto) {
+    public ResponseEntity<Object> renameEpic(@PathVariable("id") long id, @Valid @RequestBody RenameEpicDto epicDto) {
         try {
             Epic epic = epicService.renameEpic(id, epicDto);
             return ResponseEntity.status(HttpStatus.OK)

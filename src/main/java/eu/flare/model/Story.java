@@ -64,7 +64,7 @@ public class Story {
     @OneToMany(mappedBy = "storyWatchers", cascade = CascadeType.ALL)
     private List<User> storyWatchers;
 
-    @OneToMany(mappedBy = "storyTasks", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "storyTasks")
     @JsonManagedReference
     private List<Task> storyTasks;
 

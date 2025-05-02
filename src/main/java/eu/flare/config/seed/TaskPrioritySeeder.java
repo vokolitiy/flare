@@ -2,19 +2,23 @@ package eu.flare.config.seed;
 
 import eu.flare.model.TaskPriority;
 import eu.flare.repository.task.TaskPriorityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class TaskPrioritySeeder extends DataSeeder {
+@Component
+public class TaskPrioritySeeder {
 
-    public TaskPrioritySeeder(TaskPriorityRepository repository) {
-        super(repository);
+    private TaskPriorityRepository taskPriorityRepository;
+
+    @Autowired
+    public TaskPrioritySeeder(TaskPriorityRepository taskPriorityRepository) {
+        this.taskPriorityRepository = taskPriorityRepository;
     }
 
-    @Override
     public void createDataIfNotExists(List<String> data) {
-        TaskPriorityRepository taskPriorityRepository = (TaskPriorityRepository) repository;
         data.forEach(item -> {
             Optional<TaskPriority> taskPriorityOptional = taskPriorityRepository.findByName(item);
             if (taskPriorityOptional.isEmpty()) {

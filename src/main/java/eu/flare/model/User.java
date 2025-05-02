@@ -58,6 +58,12 @@ public class User implements UserDetails {
     @JsonBackReference
     private Story storyCreator;
 
+    @OneToOne
+    private Task taskCreator;
+
+    @OneToOne
+    private Task taskAssignee;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
@@ -179,5 +185,25 @@ public class User implements UserDetails {
 
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
+    }
+
+    @JsonIgnore
+    @JsonProperty("taskCreator")
+    public Task getTaskCreator() {
+        return taskCreator;
+    }
+
+    public void setTaskCreator(Task taskCreator) {
+        this.taskCreator = taskCreator;
+    }
+
+    @JsonIgnore
+    @JsonProperty("taskAssignee")
+    public Task getTaskAssignee() {
+        return taskAssignee;
+    }
+
+    public void setTaskAssignee(Task taskAssignee) {
+        this.taskAssignee = taskAssignee;
     }
 }

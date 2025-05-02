@@ -5,6 +5,7 @@ import eu.flare.model.Task;
 import eu.flare.model.dto.rename.RenameTaskDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.task.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}/rename")
-    public ResponseEntity<Object> renameTask(@PathVariable("id") long id, @RequestBody RenameTaskDto dto) {
+    public ResponseEntity<Object> renameTask(@PathVariable("id") long id, @Valid @RequestBody RenameTaskDto dto) {
         try {
             Task task = taskService.renameTask(id, dto);
             return ResponseEntity.status(HttpStatus.OK)

@@ -13,7 +13,7 @@ public class Sprint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(unique = true, nullable = false, length = 150)
+    @Column(unique = true, nullable = false, length = 30)
     private String name;
 
     @CreationTimestamp

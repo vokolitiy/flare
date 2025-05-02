@@ -2,25 +2,29 @@ package eu.flare.config.seed;
 
 import eu.flare.model.StoryProgress;
 import eu.flare.repository.story.StoryProgressRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class StoryProgressSeeder extends DataSeeder {
+@Component
+public class StoryProgressSeeder {
 
-    public StoryProgressSeeder(StoryProgressRepository repository) {
-        super(repository);
+    private StoryProgressRepository storyProgressRepository;
+
+    @Autowired
+    public StoryProgressSeeder(StoryProgressRepository storyProgressRepository) {
+        this.storyProgressRepository = storyProgressRepository;
     }
 
-    @Override
     public void createDataIfNotExists(List<String> data) {
-        StoryProgressRepository progressRepository = (StoryProgressRepository) repository;
         data.forEach(item -> {
-            Optional<StoryProgress> progressOptional = progressRepository.findByName(item);
+            Optional<StoryProgress> progressOptional = storyProgressRepository.findByName(item);
             if (progressOptional.isEmpty()) {
                 StoryProgress storyProgress = new StoryProgress();
                 storyProgress.setName(item);
-                progressRepository.save(storyProgress);
+                storyProgressRepository.save(storyProgress);
             }
         });
     }

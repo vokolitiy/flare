@@ -2,19 +2,23 @@ package eu.flare.config.seed;
 
 import eu.flare.model.StoryPriority;
 import eu.flare.repository.story.StoryPriorityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class StoryPrioritySeeder extends DataSeeder {
+@Component
+public class StoryPrioritySeeder {
 
-    public StoryPrioritySeeder(StoryPriorityRepository repository) {
-        super(repository);
+    private StoryPriorityRepository storyPriorityRepository;
+
+    @Autowired
+    public StoryPrioritySeeder(StoryPriorityRepository storyPriorityRepository) {
+        this.storyPriorityRepository = storyPriorityRepository;
     }
 
-    @Override
     public void createDataIfNotExists(List<String> data) {
-        StoryPriorityRepository storyPriorityRepository = (StoryPriorityRepository) repository;
         data.forEach(item -> {
             Optional<StoryPriority> storyPriorityOptional = storyPriorityRepository.findByName(item);
             if (storyPriorityOptional.isEmpty()) {

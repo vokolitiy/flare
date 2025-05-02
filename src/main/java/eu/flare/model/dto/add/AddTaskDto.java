@@ -1,21 +1,40 @@
 package eu.flare.model.dto.add;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import eu.flare.model.TaskPriority;
-import eu.flare.model.TaskProgress;
-import eu.flare.model.User;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record AddTaskDto(
-        @JsonProperty("name") @NotBlank String name,
-        @JsonProperty("description") @NotBlank String description,
-        @JsonProperty("completion_date") @NotBlank long estimatedCompletionDate,
-        @JsonProperty("original_estimate") @NotBlank long originalEstimate,
-        @JsonProperty("remaining_estimate") @NotBlank long remainingEstimate,
-        @JsonProperty("story_points") @NotBlank int storyPoints,
-        @JsonProperty("task_priority") @NotBlank TaskPriority taskPriority,
-        @JsonProperty("task_progress") @NotBlank TaskProgress taskProgress,
-        @JsonProperty("task_creator") @NotBlank User taskCreator,
-        @JsonProperty("task_assignee") @NotBlank  User taskAssignee
+        @JsonProperty("name")
+        @NotBlank
+        @Size(max = 150)
+        String name,
+        @JsonProperty("description")
+        @NotBlank
+        String description,
+        @JsonProperty("completion_date")
+        long estimatedCompletionDate,
+        @JsonProperty("original_estimate")
+        long originalEstimate,
+        @JsonProperty("remaining_estimate")
+        long remainingEstimate,
+        @JsonProperty("story_points")
+        int storyPoints,
+        @JsonProperty("task_priority")
+        @NotBlank
+        @Size(max = 15)
+        String taskPriority,
+        @JsonProperty("task_progress")
+        @NotBlank
+        @Size(max = 15)
+        String taskProgress,
+        @JsonProperty("task_creator")
+        @NotBlank
+        @Size(max = 20)
+        String taskCreator,
+        @JsonProperty("task_assignee")
+        @NotBlank
+        @Size(max = 20)
+        String taskAssignee
 ){
 }

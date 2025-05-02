@@ -2,19 +2,23 @@ package eu.flare.config.seed;
 
 import eu.flare.model.TaskProgress;
 import eu.flare.repository.task.TaskProgressRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-public class TaskProgressSeeder extends DataSeeder {
+@Component
+public class TaskProgressSeeder {
 
-    public TaskProgressSeeder(TaskProgressRepository repository) {
-        super(repository);
+    private TaskProgressRepository taskProgressRepository;
+
+    @Autowired
+    public TaskProgressSeeder(TaskProgressRepository taskProgressRepository) {
+        this.taskProgressRepository = taskProgressRepository;
     }
 
-    @Override
     public void createDataIfNotExists(List<String> data) {
-        TaskProgressRepository taskProgressRepository = (TaskProgressRepository) repository;
         data.forEach(item -> {
             Optional<TaskProgress> taskProgressOptional = taskProgressRepository.findByName(item);
             if (taskProgressOptional.isEmpty()) {
