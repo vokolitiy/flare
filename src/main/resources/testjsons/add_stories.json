@@ -5,8 +5,8 @@
   "original_estimate": 100,
   "remaining_estimate": 50,
   "story_points": 10,
-  "story_priority": "MAJOR",
-  "story_progress": "TODO",
+  "story_priority": "Major",
+  "story_progress": "Todo",
   "story_creator": "Testsub",
   "story_assignee":"Testsub",
   "story_watchers": ["Testsub"]

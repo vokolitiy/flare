@@ -13,14 +13,19 @@ import eu.flare.repository.story.StoryPriorityRepository;
 import eu.flare.repository.story.StoryProgressRepository;
 import eu.flare.repository.story.StoryRepository;
 import jakarta.annotation.Nullable;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(rollbackOn = {Exception.class})
 public class EpicService {
 
     private final EpicRepository epicRepository;
@@ -97,18 +102,27 @@ public class EpicService {
             story.setStoryProgress(findStoryProgress(addStory));
             story.setStoryCreator(findStoryCreator(addStory));
             story.setStoryAssignee(findUserAssignee(addStory));
-            story.setStoryWatchers(findStoryWatchers(addStory));
             story.setEpic(epic);
 
             Story savedStory = storyRepository.save(story);
             if (creatorUser != null) {
-                creatorUser.setStoryCreator(savedStory);
-                userRepository.save(creatorUser);
+                List<Story> userCreatedStories = creatorUser.getCreatedStories();
+                if (!userCreatedStories.contains(savedStory)) {
+                    userCreatedStories.add(savedStory);
+                    creatorUser.setCreatedStories(userCreatedStories);
+                    userRepository.save(creatorUser);
+                }
             }
             if (assigneeUser != null) {
-                assigneeUser.setStoryAssignee(savedStory);
-                userRepository.save(assigneeUser);
+                List<Story> userAssignedStories = assigneeUser.getAssignedStories();
+                if (!userAssignedStories.contains(savedStory)) {
+                    userAssignedStories.add(savedStory);
+                    assigneeUser.setAssignedStories(userAssignedStories);
+                    userRepository.save(assigneeUser);
+                }
             }
+
+            updateStoryWatchers(addStory, savedStory);
 
             return savedStory;
         }).collect(Collectors.toList());
@@ -161,5 +175,26 @@ public class EpicService {
     private boolean isFreshStory(AddStoryDto addStoryDto, List<Story> stories) {
         return stories.stream().filter(story -> story.getName().equals(addStoryDto.name()))
                 .toList().isEmpty();
+    }
+
+    private void updateStoryWatchers(AddStoryDto addStory, Story savedStory) {
+        addStory.storyWatcherNames()
+                .stream()
+                .map(name -> {
+                    Optional<User> userOptional = userRepository.findByUsername(name);
+                    if (userOptional.isEmpty()) {
+                        throw new UsernameNotFoundException("User not found");
+                    } else {
+                        return userOptional.get();
+                    }
+                })
+                .forEach(user -> {
+                    List<Story> watchedStories = user.getWatchedStories();
+                    if (!watchedStories.contains(savedStory)) {
+                        watchedStories.add(savedStory);
+                        user.setWatchedStories(watchedStories);
+                        userRepository.save(user);
+                    }
+                });
     }
 }

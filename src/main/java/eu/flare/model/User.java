@@ -2,6 +2,7 @@ package eu.flare.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -46,17 +47,22 @@ public class User implements UserDetails {
             )
     private List<Role> roles = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_id")
-    private Story storyWatchers;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_story_watchers",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "story_id", referencedColumnName = "id")
+    )
+    @JsonManagedReference
+    private List<Story> watchedStories;
 
-    @OneToOne
-    @JsonBackReference
-    private Story storyAssignee;
+    @OneToMany(mappedBy = "storyAssignee")
+    @JsonManagedReference
+    private List<Story> assignedStories;
 
-    @OneToOne
-    @JsonBackReference
-    private Story storyCreator;
+    @OneToMany(mappedBy = "storyAssignee")
+    @JsonManagedReference
+    private List<Story> createdStories;
 
     @OneToOne
     private Task taskCreator;
@@ -163,22 +169,6 @@ public class User implements UserDetails {
         return id;
     }
 
-    public Story getStoryAssignee() {
-        return storyAssignee;
-    }
-
-    public void setStoryAssignee(Story storyAssignee) {
-        this.storyAssignee = storyAssignee;
-    }
-
-    public Story getStoryCreator() {
-        return storyCreator;
-    }
-
-    public void setStoryCreator(Story storyCreator) {
-        this.storyCreator = storyCreator;
-    }
-
     public String getMiddleName() {
         return middleName;
     }
@@ -205,5 +195,29 @@ public class User implements UserDetails {
 
     public void setTaskAssignee(Task taskAssignee) {
         this.taskAssignee = taskAssignee;
+    }
+
+    public List<Story> getAssignedStories() {
+        return assignedStories;
+    }
+
+    public void setAssignedStories(List<Story> assignedStories) {
+        this.assignedStories = assignedStories;
+    }
+
+    public List<Story> getCreatedStories() {
+        return createdStories;
+    }
+
+    public void setCreatedStories(List<Story> createdStories) {
+        this.createdStories = createdStories;
+    }
+
+    public List<Story> getWatchedStories() {
+        return watchedStories;
+    }
+
+    public void setWatchedStories(List<Story> watchedStories) {
+        this.watchedStories = watchedStories;
     }
 }
