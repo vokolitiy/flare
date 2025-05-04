@@ -1,5 +1,6 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,14 +27,6 @@ public class Sprint {
 
     private boolean isCompleted;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_id", referencedColumnName = "id")
-    private List<Story> sprintStories;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "board_id", referencedColumnName = "id")
-    private Board board;
-
     public long getId() {
         return id;
     }
@@ -44,14 +37,6 @@ public class Sprint {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
     }
 
     public Date getCompleteDate() {

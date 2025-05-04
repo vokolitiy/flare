@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,20 +50,23 @@ public class Story {
     @JsonManagedReference
     private StoryProgress storyProgress;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyCreator", orphanRemoval = true)
-    @JsonManagedReference
-    private User storyCreator;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "story_resolution_id", referencedColumnName = "id")
     private StoryResolution storyResolution;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyAssignee", orphanRemoval = true)
-    @JsonManagedReference
-    private User storyAssignee;
+    @ManyToMany(mappedBy = "watchedStories", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<User> storyWatchers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "storyWatchers", cascade = CascadeType.ALL)
-    private List<User> storyWatchers;
+    @ManyToOne
+    @JoinColumn(name = "story_creator_id")
+    @JsonBackReference
+    private User storyCreator;
+
+    @ManyToOne
+    @JoinColumn(name = "story_assignee_id")
+    @JsonBackReference
+    private User storyAssignee;
 
     @OneToMany(mappedBy = "storyTasks")
     @JsonManagedReference
@@ -172,14 +176,6 @@ public class Story {
         this.storyAssignee = storyAssignee;
     }
 
-    public List<User> getStoryWatchers() {
-        return storyWatchers;
-    }
-
-    public void setStoryWatchers(List<User> storyWatchers) {
-        this.storyWatchers = storyWatchers;
-    }
-
     public void setEpic(Epic epic) {
         this.epic = epic;
     }
@@ -198,5 +194,13 @@ public class Story {
 
     public void setBacklog(Backlog backlog) {
         this.backlog = backlog;
+    }
+
+    public List<User> getStoryWatchers() {
+        return storyWatchers;
+    }
+
+    public void setStoryWatchers(List<User> storyWatchers) {
+        this.storyWatchers = storyWatchers;
     }
 }
