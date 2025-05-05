@@ -89,7 +89,7 @@ public class Story {
     private List<Board> boardDoneStories;
 
     @ManyToOne
-    @JoinColumn(name="sprint_story_id", nullable=false)
+    @JoinColumn(name="sprint_story_id")
     @JsonBackReference
     private Sprint sprintStory;
 

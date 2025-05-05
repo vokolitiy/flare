@@ -107,4 +107,6 @@ public final class Responses {
 
     public record BoardResponse(@JsonProperty("board") Board board) {}
     public record BoardNotFoundResponse(@JsonProperty("error") String error) {}
+
+    public record SprintNotFoundResponse(@JsonProperty("error") String error) {}
 }

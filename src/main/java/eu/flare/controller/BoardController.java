@@ -1,6 +1,7 @@
 package eu.flare.controller;
 
 import eu.flare.exceptions.notfound.BoardNotFoundException;
+import eu.flare.exceptions.notfound.SprintNotFoundException;
 import eu.flare.model.Board;
 import eu.flare.model.dto.add.AddBoardDto;
 import eu.flare.model.dto.add.AddBoardStoriesDto;
@@ -40,6 +41,24 @@ public class BoardController {
         Board board = boardService.createBoard(addBoardDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new Responses.BoardResponse(board));
+    }
+
+    @PutMapping("/{boardId}/sprint/{sprintId}")
+    public ResponseEntity<?> addBoardToSprint(
+            @PathVariable("boardId") long boardId,
+            @PathVariable("sprintId") long sprintId
+    ) {
+        try {
+            Board board = boardService.addSprintBoard(boardId, sprintId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new Responses.BoardResponse(board));
+        } catch (SprintNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.SprintNotFoundResponse(e.getMessage()));
+        } catch (BoardNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.BoardNotFoundResponse(e.getMessage()));
+        }
     }
 
     @PostMapping("/{id}/stories/refresh")
