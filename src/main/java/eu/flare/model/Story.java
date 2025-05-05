@@ -72,6 +72,27 @@ public class Story {
     @JsonManagedReference
     private List<Task> storyTasks;
 
+    @ManyToMany(mappedBy = "todoStories", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Board> boardTodoStories;
+
+    @ManyToMany(mappedBy = "inProgressStories", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Board> boardInProgressStories;
+
+    @ManyToMany(mappedBy = "inReviewStories", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Board> boardInReviewStories;
+
+    @ManyToMany(mappedBy = "doneStories", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Board> boardDoneStories;
+
+    @ManyToOne
+    @JoinColumn(name="sprint_story_id", nullable=false)
+    @JsonBackReference
+    private Sprint sprintStory;
+
     public String getName() {
         return name;
     }
@@ -202,5 +223,45 @@ public class Story {
 
     public void setStoryWatchers(List<User> storyWatchers) {
         this.storyWatchers = storyWatchers;
+    }
+
+    public List<Board> getBoardTodoStories() {
+        return boardTodoStories;
+    }
+
+    public void setBoardTodoStories(List<Board> boardTodoStories) {
+        this.boardTodoStories = boardTodoStories;
+    }
+
+    public List<Board> getBoardInProgressStories() {
+        return boardInProgressStories;
+    }
+
+    public void setBoardInProgressStories(List<Board> boardInProgressStories) {
+        this.boardInProgressStories = boardInProgressStories;
+    }
+
+    public List<Board> getBoardInReviewStories() {
+        return boardInReviewStories;
+    }
+
+    public void setBoardInReviewStories(List<Board> boardInReviewStories) {
+        this.boardInReviewStories = boardInReviewStories;
+    }
+
+    public List<Board> getBoardDoneStories() {
+        return boardDoneStories;
+    }
+
+    public void setBoardDoneStories(List<Board> boardDoneStories) {
+        this.boardDoneStories = boardDoneStories;
+    }
+
+    public Sprint getSprintStory() {
+        return sprintStory;
+    }
+
+    public void setSprintStory(Sprint sprintStory) {
+        this.sprintStory = sprintStory;
     }
 }

@@ -104,4 +104,7 @@ public final class Responses {
 
     public record RefreshTokenNotFoundResponse(@JsonProperty("error") String error) {}
     public record UserLoggedOutSuccessfullyResponse(@JsonProperty("message") String message) {}
+
+    public record BoardResponse(@JsonProperty("board") Board board) {}
+    public record BoardNotFoundResponse(@JsonProperty("error") String error) {}
 }
