@@ -39,6 +39,7 @@ public class SecurityConfiguration {
             authorizeHttpRequests
                     .requestMatchers("/api/v1/auth/login").permitAll()
                     .requestMatchers("/api/v1/auth/signup").permitAll()
+                    .requestMatchers("/api/v1/auth/logout").permitAll()
                     .requestMatchers("/api/v1/project").authenticated()
                     .requestMatchers("/api/v1/project/create").authenticated()
                     .requestMatchers("/api/v1/project/{id}/epics").authenticated()

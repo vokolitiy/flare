@@ -101,4 +101,7 @@ public final class Responses {
     public record TaskNamesConflictResponse(@JsonProperty("error") String error) {}
     public record StoryNotFoundResponse(@JsonProperty("error") String error){}
     public record StoryUpdatedResponse(@JsonProperty("story") Story story) {}
+
+    public record RefreshTokenNotFoundResponse(@JsonProperty("error") String error) {}
+    public record UserLoggedOutSuccessfullyResponse(@JsonProperty("message") String message) {}
 }

@@ -2,9 +2,11 @@ package eu.flare.config;
 
 import eu.flare.config.seed.*;
 import eu.flare.model.Privilege;
+import eu.flare.model.RefreshTokenStatus;
 import eu.flare.model.Role;
 import eu.flare.model.User;
 import eu.flare.repository.PrivilegeRepository;
+import eu.flare.repository.RefreshTokenRepository;
 import eu.flare.repository.RoleRepository;
 import eu.flare.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final StoryPrioritySeeder storyPrioritySeeder;
     private final StoryProgressSeeder storyProgressSeeder;
@@ -40,6 +43,7 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
             UserRepository userRepository,
             RoleRepository roleRepository,
             PrivilegeRepository privilegeRepository,
+            RefreshTokenRepository refreshTokenRepository,
             PasswordEncoder passwordEncoder,
             StoryPrioritySeeder storyPrioritySeeder,
             StoryProgressSeeder storyProgressSeeder,
@@ -51,6 +55,7 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.storyPrioritySeeder = storyPrioritySeeder;
         this.storyProgressSeeder = storyProgressSeeder;
@@ -61,10 +66,24 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (alreadySetup) return;
+        if (!alreadySetup) {
+            seedDefaultData();
+            cleanupRevokedTokens();
+        }
+    }
+
+    private void cleanupRevokedTokens() {
+        refreshTokenRepository.findAll()
+                .forEach(refreshToken -> {
+                    if (refreshToken.getRefreshTokenStatus() == RefreshTokenStatus.REVOKED) {
+                        refreshTokenRepository.delete(refreshToken);
+                    }
+                });
+    }
+
+    private void seedDefaultData() {
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
         storyPrioritySeeder.createDataIfNotExists(List.of("Minor", "Major", "Severe", "Blocker"));
