@@ -2,7 +2,6 @@ package eu.flare.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.flare.model.*;
-import eu.flare.model.dto.UserLoggedOutDto;
 import eu.flare.model.dto.response.ResponsesDto;
 
 import java.util.List;
@@ -104,5 +103,5 @@ public final class Responses {
     public record StoryUpdatedResponse(@JsonProperty("story") Story story) {}
 
     public record RefreshTokenNotFoundResponse(@JsonProperty("error") String error) {}
-    public record UserLoggedOutSuccessfullyResponse(@JsonProperty("message") UserLoggedOutDto dto) {}
+    public record UserLoggedOutSuccessfullyResponse(@JsonProperty("message") String message) {}
 }

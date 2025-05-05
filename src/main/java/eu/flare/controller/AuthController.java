@@ -98,7 +98,7 @@ public class AuthController {
         try {
             UserLoggedOutDto userLoggedOut = authService.logout(request, response);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new Responses.UserLoggedOutSuccessfullyResponse(userLoggedOut));
+                    .body(new Responses.UserLoggedOutSuccessfullyResponse(userLoggedOut.message()));
         } catch (RefreshTokenNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new Responses.RefreshTokenNotFoundResponse(e.getMessage()));
