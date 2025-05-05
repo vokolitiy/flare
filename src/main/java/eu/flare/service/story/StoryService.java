@@ -1,10 +1,12 @@
 package eu.flare.service.story;
 
 import eu.flare.exceptions.conflicts.TasksNamesConflictException;
+import eu.flare.exceptions.notfound.SprintNotFoundException;
 import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.*;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
+import eu.flare.repository.SprintRepository;
 import eu.flare.repository.UserRepository;
 import eu.flare.repository.story.StoryRepository;
 import eu.flare.repository.task.TaskPriorityRepository;
@@ -27,6 +29,7 @@ public class StoryService {
     private final UserRepository userRepository;
     private final TaskPriorityRepository taskPriorityRepository;
     private final TaskProgressRepository taskProgressRepository;
+    private final SprintRepository sprintRepository;
 
     @Autowired
     public StoryService(
@@ -34,13 +37,15 @@ public class StoryService {
             TaskRepository taskRepository,
             UserRepository userRepository,
             TaskPriorityRepository taskPriorityRepository,
-            TaskProgressRepository taskProgressRepository
+            TaskProgressRepository taskProgressRepository,
+            SprintRepository sprintRepository
     ) {
         this.storyRepository = storyRepository;
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.taskPriorityRepository = taskPriorityRepository;
         this.taskProgressRepository = taskProgressRepository;
+        this.sprintRepository = sprintRepository;
     }
 
     public Optional<Story> findStoryWithName(String name) {
@@ -109,5 +114,22 @@ public class StoryService {
 
     private boolean taskExists(String taskName) {
         return taskRepository.findByName(taskName).isPresent();
+    }
+
+    public Story moveStoryIntoSprint(long storyId, long sprintId) throws StoryNotFoundException, SprintNotFoundException {
+        Story story = storyRepository.findById(storyId)
+                .orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        Sprint sprint = sprintRepository.findById(sprintId)
+                .orElseThrow(() -> new SprintNotFoundException("Sprint not found"));
+        List<Story> sprintStories = sprint.getSprintStories();
+        if (sprintStories.isEmpty() || !sprintStories.contains(story)) {
+            sprintStories.add(story);
+            sprint.setSprintStories(sprintStories);
+            story.setSprintStory(sprint);
+            storyRepository.save(story);
+            sprintRepository.save(sprint);
+        }
+
+        return story;
     }
 }
