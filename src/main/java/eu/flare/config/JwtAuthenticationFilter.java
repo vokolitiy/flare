@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
-                if (jwtService.isTokenValid(token)) {
+                if (jwtService.isTokenValid(token) && !jwtService.isTokenRevoked(token)) {
                     String username = jwtService.extractUsername(token);
                     List<String> roles = jwtService.extractUserRoles(token);
                     List<SimpleGrantedAuthority> authorities = roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
