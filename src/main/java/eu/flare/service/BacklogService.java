@@ -6,7 +6,7 @@ import eu.flare.model.Backlog;
 import eu.flare.model.Story;
 import eu.flare.model.dto.add.AddBacklogStoryDto;
 import eu.flare.repository.BacklogRepository;
-import eu.flare.repository.story.StoryRepository;
+import eu.flare.repository.StoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,8 @@
 package eu.flare.config;
 
-import eu.flare.config.seed.*;
+import eu.flare.config.seed.TaskPrioritySeeder;
+import eu.flare.config.seed.TaskProgressSeeder;
+import eu.flare.config.seed.TaskResolutionSeeder;
 import eu.flare.model.Privilege;
 import eu.flare.model.RefreshTokenStatus;
 import eu.flare.model.Role;
@@ -29,9 +31,6 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
     private final PrivilegeRepository privilegeRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final StoryPrioritySeeder storyPrioritySeeder;
-    private final StoryProgressSeeder storyProgressSeeder;
-    private final StoryResolutionSeeder storyResolutionSeeder;
     private final TaskPrioritySeeder taskPrioritySeeder;
     private final TaskProgressSeeder taskProgressSeeder;
     private final TaskResolutionSeeder taskResolutionSeeder;
@@ -45,9 +44,6 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
             PrivilegeRepository privilegeRepository,
             RefreshTokenRepository refreshTokenRepository,
             PasswordEncoder passwordEncoder,
-            StoryPrioritySeeder storyPrioritySeeder,
-            StoryProgressSeeder storyProgressSeeder,
-            StoryResolutionSeeder storyResolutionSeeder,
             TaskPrioritySeeder taskPrioritySeeder,
             TaskProgressSeeder taskProgressSeeder,
             TaskResolutionSeeder taskResolutionSeeder
@@ -57,9 +53,6 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
         this.privilegeRepository = privilegeRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
-        this.storyPrioritySeeder = storyPrioritySeeder;
-        this.storyProgressSeeder = storyProgressSeeder;
-        this.storyResolutionSeeder = storyResolutionSeeder;
         this.taskPrioritySeeder = taskPrioritySeeder;
         this.taskProgressSeeder = taskProgressSeeder;
         this.taskResolutionSeeder = taskResolutionSeeder;
@@ -86,9 +79,6 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
     private void seedDefaultData() {
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-        storyPrioritySeeder.createDataIfNotExists(List.of("Minor", "Major", "Severe", "Blocker"));
-        storyProgressSeeder.createDataIfNotExists(List.of("Todo", "In Progress", "In review", "Done"));
-        storyResolutionSeeder.createDataIfNotExists(List.of("Done", "Will not fix"));
         taskPrioritySeeder.createDataIfNotExists(List.of("Minor", "Major", "Severe", "Blocker"));
         taskProgressSeeder.createDataIfNotExists(List.of("Todo", "In Progress", "In review", "Done"));
         taskResolutionSeeder.createDataIfNotExists(List.of("Done", "Will not fix"));

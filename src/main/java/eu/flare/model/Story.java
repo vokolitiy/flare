@@ -42,17 +42,14 @@ public class Story {
 
     private int storyPoints;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyPriority", orphanRemoval = true)
-    @JsonManagedReference
-    private StoryPriority storyPriority;
+    @Enumerated(value = EnumType.STRING)
+    private StoryPriorityType storyPriorityType;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "storyProgress", orphanRemoval = true)
-    @JsonManagedReference
-    private StoryProgress storyProgress;
+    @Enumerated(value = EnumType.STRING)
+    private StoryProgressType storyProgressType;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "story_resolution_id", referencedColumnName = "id")
-    private StoryResolution storyResolution;
+    @Enumerated(value = EnumType.STRING)
+    private StoryResolutionType storyResolutionType;
 
     @ManyToMany(mappedBy = "watchedStories", cascade = CascadeType.ALL)
     @JsonBackReference
@@ -136,36 +133,12 @@ public class Story {
         this.storyPoints = storyPoints;
     }
 
-    public StoryPriority getStoryPriority() {
-        return storyPriority;
-    }
-
-    public void setStoryPriority(StoryPriority storyPriority) {
-        this.storyPriority = storyPriority;
-    }
-
-    public StoryProgress getStoryProgress() {
-        return storyProgress;
-    }
-
-    public void setStoryProgress(StoryProgress storyProgress) {
-        this.storyProgress = storyProgress;
-    }
-
     public User getStoryCreator() {
         return storyCreator;
     }
 
     public void setStoryCreator(User storyCreator) {
         this.storyCreator = storyCreator;
-    }
-
-    public StoryResolution getStoryResolution() {
-        return storyResolution;
-    }
-
-    public void setStoryResolution(StoryResolution storyResolution) {
-        this.storyResolution = storyResolution;
     }
 
     public User getStoryAssignee() {
@@ -202,5 +175,29 @@ public class Story {
 
     public void setStoryWatchers(List<User> storyWatchers) {
         this.storyWatchers = storyWatchers;
+    }
+
+    public StoryPriorityType getStoryPriorityType() {
+        return storyPriorityType;
+    }
+
+    public void setStoryPriorityType(StoryPriorityType storyPriorityType) {
+        this.storyPriorityType = storyPriorityType;
+    }
+
+    public StoryProgressType getStoryProgressType() {
+        return storyProgressType;
+    }
+
+    public void setStoryProgressType(StoryProgressType storyProgressType) {
+        this.storyProgressType = storyProgressType;
+    }
+
+    public StoryResolutionType getStoryResolutionType() {
+        return storyResolutionType;
+    }
+
+    public void setStoryResolutionType(StoryResolutionType storyResolutionType) {
+        this.storyResolutionType = storyResolutionType;
     }
 }
