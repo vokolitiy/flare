@@ -8,10 +8,8 @@ import eu.flare.model.dto.add.AddStoryDto;
 import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.repository.BacklogRepository;
 import eu.flare.repository.EpicRepository;
+import eu.flare.repository.StoryRepository;
 import eu.flare.repository.UserRepository;
-import eu.flare.repository.story.StoryPriorityRepository;
-import eu.flare.repository.story.StoryProgressRepository;
-import eu.flare.repository.story.StoryRepository;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +26,6 @@ public class EpicService {
     private final EpicRepository epicRepository;
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
-    private final StoryPriorityRepository storyPriorityRepository;
-    private final StoryProgressRepository storyProgressRepository;
     private final BacklogRepository backlogRepository;
 
     @Autowired
@@ -37,15 +33,11 @@ public class EpicService {
             EpicRepository epicRepository,
             UserRepository userRepository,
             StoryRepository storyRepository,
-            StoryPriorityRepository storyPriorityRepository,
-            StoryProgressRepository storyProgressRepository,
             BacklogRepository backlogRepository
     ) {
         this.epicRepository = epicRepository;
         this.userRepository = userRepository;
         this.storyRepository = storyRepository;
-        this.storyPriorityRepository = storyPriorityRepository;
-        this.storyProgressRepository = storyProgressRepository;
         this.backlogRepository = backlogRepository;
     }
 
@@ -95,8 +87,8 @@ public class EpicService {
             story.setOriginalEstimate(addStory.originalEstimate());
             story.setRemainingEstimate(addStory.remainingEstimate());
             story.setStoryPoints(addStory.storyPoints());
-            story.setStoryPriority(findStoryPriority(addStory));
-            story.setStoryProgress(findStoryProgress(addStory));
+            story.setStoryPriorityType(mapStoryPriority(addStory));
+            story.setStoryProgressType(mapStoryProgress(addStory));
             story.setStoryCreator(findStoryCreator(addStory));
             story.setStoryAssignee(findUserAssignee(addStory));
             story.setEpic(epic);
@@ -140,14 +132,14 @@ public class EpicService {
         return epicRepository.save(epic);
     }
 
-    private StoryPriority findStoryPriority(AddStoryDto addStoryDto) {
-        Optional<StoryPriority> storyPriorityOptional = storyPriorityRepository.findByName(addStoryDto.storyPriorityName());
-        return storyPriorityOptional.orElse(null);
+    private StoryProgressType mapStoryProgress(AddStoryDto addStory) {
+        String progress = addStory.storyProgressName();
+        return StoryProgressType.valueOfLabel(progress);
     }
 
-    private StoryProgress findStoryProgress(AddStoryDto addStoryDto) {
-        Optional<StoryProgress> storyProgressOptional = storyProgressRepository.findByName(addStoryDto.storyProgressName());
-        return storyProgressOptional.orElse(null);
+    private StoryPriorityType mapStoryPriority(AddStoryDto addStory) {
+        String priority = addStory.storyPriorityName();
+        return StoryPriorityType.valueOfLabel(priority);
     }
 
     @Nullable

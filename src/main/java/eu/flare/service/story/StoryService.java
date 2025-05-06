@@ -5,11 +5,13 @@ import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.*;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
+import eu.flare.model.dto.update.UpdateStoryPriorityDto;
+import eu.flare.repository.StoryRepository;
 import eu.flare.repository.UserRepository;
-import eu.flare.repository.story.StoryRepository;
 import eu.flare.repository.task.TaskPriorityRepository;
 import eu.flare.repository.task.TaskProgressRepository;
 import eu.flare.repository.task.TaskRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,18 @@ public class StoryService {
         Story story = storyOptional.get();
         List<Task> storyTasks = story.getStoryTasks();
         return createStoryTasks(storyTasks, story, addTaskDtos);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public Story updateStoryPriority(long id, UpdateStoryPriorityDto dto) throws StoryNotFoundException {
+        Story story = storyRepository.findById(id)
+                .orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        StoryPriorityType priority = story.getStoryPriorityType();
+        if (priority == null) {
+            return story;
+        }
+        story.setStoryPriorityType(StoryPriorityType.valueOfLabel(dto.name()));
+        return storyRepository.save(story);
     }
 
     private Story createStoryTasks(List<Task> tasks, Story story, List<AddTaskDto> addTaskDtos) {

@@ -5,6 +5,7 @@ import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.Story;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
+import eu.flare.model.dto.update.UpdateStoryPriorityDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.story.StoryService;
 import jakarta.validation.Valid;
@@ -28,14 +29,14 @@ public class StoryController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> findStory(@RequestParam("name") String name) {
+    public ResponseEntity<?> findStory(@RequestParam("name") String name) {
         Optional<Story> story = storyService.findStoryWithName(name);
         return story.<ResponseEntity<Object>>map(value -> ResponseEntity.ok(new Responses.StoryResponse(value))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new Responses.StoryNotFoundResponse("Story not found")));
     }
 
     @PutMapping("/{id}/tasks/add")
-    public ResponseEntity<Object> addTasks(@PathVariable("id") long id, @Valid @RequestBody List<AddTaskDto> addTaskDtos) {
+    public ResponseEntity<?> addTasks(@PathVariable("id") long id, @Valid @RequestBody List<AddTaskDto> addTaskDtos) {
         try {
             Story story = storyService.createTasksForStory(id, addTaskDtos);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -50,11 +51,26 @@ public class StoryController {
     }
 
     @PutMapping("/{id}/rename")
-    public ResponseEntity<Object> renameStory(@PathVariable("id") long id, @Valid @RequestBody RenameStoryDto dto) {
+    public ResponseEntity<?> renameStory(@PathVariable("id") long id, @Valid @RequestBody RenameStoryDto dto) {
         try {
             Story story = storyService.renameStory(id, dto);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new Responses.StoryUpdatedResponse(story));
+        } catch (StoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.StoryNotFoundResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/priority/update")
+    public ResponseEntity<?> updateStoryPriority(
+            @PathVariable("id") long id,
+            @Valid @RequestBody UpdateStoryPriorityDto dto
+    ) {
+        try {
+            Story story = storyService.updateStoryPriority(id, dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new Responses.StoryResponse(story));
         } catch (StoryNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new Responses.StoryNotFoundResponse(e.getMessage()));

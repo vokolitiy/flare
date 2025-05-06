@@ -88,15 +88,6 @@ public final class Responses {
     public record TaskResponse(@JsonProperty("task") Task task) {}
     public record TaskUpdatedResponse(@JsonProperty("task") Task task) {}
 
-    public record StoryResolutionsNotFoundResponse(@JsonProperty("error") String error){}
-    public record StoryResolutionsResponse(@JsonProperty("resolutions") List<StoryResolution> resolutions){}
-
-    public record StoryProgressesNotFoundResponse(@JsonProperty("error") String error){}
-    public record StoryProgressesResponse(@JsonProperty("progresses") List<StoryProgress> progresses){}
-
-    public record StoryPrioritiesNotFoundResponse(@JsonProperty("error") String error){}
-    public record StoryPrioritiesResponse(@JsonProperty("priorities") List<StoryPriority> priorities){}
-
     public record StoryResponse(@JsonProperty("story") Story story){}
     public record TaskNamesConflictResponse(@JsonProperty("error") String error) {}
     public record StoryNotFoundResponse(@JsonProperty("error") String error){}
