@@ -43,13 +43,13 @@ public class Story {
     private int storyPoints;
 
     @Enumerated(value = EnumType.STRING)
-    private StoryPriorityType storyPriorityType;
+    private PriorityType priorityType;
 
     @Enumerated(value = EnumType.STRING)
-    private StoryProgressType storyProgressType;
+    private ProgressType progressType;
 
     @Enumerated(value = EnumType.STRING)
-    private StoryResolutionType storyResolutionType;
+    private ResolutionType resolutionType;
 
     @ManyToMany(mappedBy = "watchedStories", cascade = CascadeType.ALL)
     @JsonBackReference
@@ -177,27 +177,27 @@ public class Story {
         this.storyWatchers = storyWatchers;
     }
 
-    public StoryPriorityType getStoryPriorityType() {
-        return storyPriorityType;
+    public PriorityType getPriorityType() {
+        return priorityType;
     }
 
-    public void setStoryPriorityType(StoryPriorityType storyPriorityType) {
-        this.storyPriorityType = storyPriorityType;
+    public void setPriorityType(PriorityType priorityType) {
+        this.priorityType = priorityType;
     }
 
-    public StoryProgressType getStoryProgressType() {
-        return storyProgressType;
+    public ProgressType getProgressType() {
+        return progressType;
     }
 
-    public void setStoryProgressType(StoryProgressType storyProgressType) {
-        this.storyProgressType = storyProgressType;
+    public void setProgressType(ProgressType progressType) {
+        this.progressType = progressType;
     }
 
-    public StoryResolutionType getStoryResolutionType() {
-        return storyResolutionType;
+    public ResolutionType getResolutionType() {
+        return resolutionType;
     }
 
-    public void setStoryResolutionType(StoryResolutionType storyResolutionType) {
-        this.storyResolutionType = storyResolutionType;
+    public void setResolutionType(ResolutionType resolutionType) {
+        this.resolutionType = resolutionType;
     }
 }

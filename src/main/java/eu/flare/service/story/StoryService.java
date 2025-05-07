@@ -8,9 +8,7 @@ import eu.flare.model.dto.rename.RenameStoryDto;
 import eu.flare.model.dto.update.UpdateStoryPriorityDto;
 import eu.flare.repository.StoryRepository;
 import eu.flare.repository.UserRepository;
-import eu.flare.repository.task.TaskPriorityRepository;
-import eu.flare.repository.task.TaskProgressRepository;
-import eu.flare.repository.task.TaskRepository;
+import eu.flare.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,22 +25,16 @@ public class StoryService {
     private final StoryRepository storyRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final TaskPriorityRepository taskPriorityRepository;
-    private final TaskProgressRepository taskProgressRepository;
 
     @Autowired
     public StoryService(
             StoryRepository storyRepository,
             TaskRepository taskRepository,
-            UserRepository userRepository,
-            TaskPriorityRepository taskPriorityRepository,
-            TaskProgressRepository taskProgressRepository
+            UserRepository userRepository
     ) {
         this.storyRepository = storyRepository;
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
-        this.taskPriorityRepository = taskPriorityRepository;
-        this.taskProgressRepository = taskProgressRepository;
     }
 
     public Optional<Story> findStoryWithName(String name) {
@@ -63,11 +55,11 @@ public class StoryService {
     public Story updateStoryPriority(long id, UpdateStoryPriorityDto dto) throws StoryNotFoundException {
         Story story = storyRepository.findById(id)
                 .orElseThrow(() -> new StoryNotFoundException("Story not found"));
-        StoryPriorityType priority = story.getStoryPriorityType();
+        PriorityType priority = story.getPriorityType();
         if (priority == null) {
             return story;
         }
-        story.setStoryPriorityType(StoryPriorityType.valueOfLabel(dto.name()));
+        story.setPriorityType(PriorityType.valueOfLabel(dto.name()));
         return storyRepository.save(story);
     }
 
@@ -82,8 +74,6 @@ public class StoryService {
                     if (taskCreator.isEmpty() || taskAssignee.isEmpty()) {
                         throw new UsernameNotFoundException("Task creator or task assignee is not found");
                     }
-                    Optional<TaskPriority> taskPriority = taskPriorityRepository.findByName(mappable.taskPriority());
-                    Optional<TaskProgress> taskProgress = taskProgressRepository.findByName(mappable.taskProgress());
                     task.setName(mappable.name());
                     task.setDescription(mappable.description());
                     task.setEstimatedCompletionDate(new Date(mappable.estimatedCompletionDate()));
@@ -92,8 +82,8 @@ public class StoryService {
                     task.setStoryTasks(story);
                     task.setTaskCreator(taskCreator.get());
                     task.setTaskAssignee(taskAssignee.get());
-                    task.setTaskPriority(taskPriority.get());
-                    task.setTaskProgress(taskProgress.get());
+                    task.setPriorityType(PriorityType.valueOfLabel(mappable.taskPriority()));
+                    task.setProgressType(ProgressType.valueOfLabel(mappable.taskProgress()));
                     task.setTaskCreator(taskCreator.get());
                     task.setTaskAssignee(taskAssignee.get());
                     taskRepository.save(task);

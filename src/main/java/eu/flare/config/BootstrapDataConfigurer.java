@@ -1,8 +1,5 @@
 package eu.flare.config;
 
-import eu.flare.config.seed.TaskPrioritySeeder;
-import eu.flare.config.seed.TaskProgressSeeder;
-import eu.flare.config.seed.TaskResolutionSeeder;
 import eu.flare.model.Privilege;
 import eu.flare.model.RefreshTokenStatus;
 import eu.flare.model.Role;
@@ -31,9 +28,6 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
     private final PrivilegeRepository privilegeRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TaskPrioritySeeder taskPrioritySeeder;
-    private final TaskProgressSeeder taskProgressSeeder;
-    private final TaskResolutionSeeder taskResolutionSeeder;
 
     private boolean alreadySetup = false;
 
@@ -43,19 +37,13 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
             RoleRepository roleRepository,
             PrivilegeRepository privilegeRepository,
             RefreshTokenRepository refreshTokenRepository,
-            PasswordEncoder passwordEncoder,
-            TaskPrioritySeeder taskPrioritySeeder,
-            TaskProgressSeeder taskProgressSeeder,
-            TaskResolutionSeeder taskResolutionSeeder
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.privilegeRepository = privilegeRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
-        this.taskPrioritySeeder = taskPrioritySeeder;
-        this.taskProgressSeeder = taskProgressSeeder;
-        this.taskResolutionSeeder = taskResolutionSeeder;
     }
 
     @Override
@@ -79,10 +67,6 @@ public class BootstrapDataConfigurer implements ApplicationListener<ContextRefre
     private void seedDefaultData() {
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-        taskPrioritySeeder.createDataIfNotExists(List.of("Minor", "Major", "Severe", "Blocker"));
-        taskProgressSeeder.createDataIfNotExists(List.of("Todo", "In Progress", "In review", "Done"));
-        taskResolutionSeeder.createDataIfNotExists(List.of("Done", "Will not fix"));
-
 
         List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege);
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);

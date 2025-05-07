@@ -1,10 +1,10 @@
-package eu.flare.controller.task;
+package eu.flare.controller;
 
 import eu.flare.exceptions.notfound.TaskNotFoundException;
 import eu.flare.model.Task;
 import eu.flare.model.dto.rename.RenameTaskDto;
 import eu.flare.model.response.Responses;
-import eu.flare.service.task.TaskService;
+import eu.flare.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

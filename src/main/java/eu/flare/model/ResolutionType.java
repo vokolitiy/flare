@@ -1,12 +1,12 @@
 package eu.flare.model;
 
-public enum StoryResolutionType {
+public enum ResolutionType {
     DONE("Done"),
     WONT_FIX("Will not fix");
 
     private final String resolutionType;
 
-    StoryResolutionType(String resolutionType) {
+    ResolutionType(String resolutionType) {
         this.resolutionType = resolutionType;
     }
 

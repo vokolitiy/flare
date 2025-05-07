@@ -33,17 +33,14 @@ public class Task {
     @JsonBackReference
     private Story storyTasks;
 
-    @OneToOne(mappedBy = "taskPriority")
-    @JsonManagedReference
-    private TaskPriority taskPriority;
+    @Enumerated(value = EnumType.STRING)
+    private PriorityType priorityType;
 
-    @OneToOne(mappedBy = "taskProgress")
-    @JsonManagedReference
-    private TaskProgress taskProgress;
+    @Enumerated(value = EnumType.STRING)
+    private ProgressType progressType;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "task_resolution_id")
-    private TaskResolution taskResolution;
+    @Enumerated(value = EnumType.STRING)
+    private ResolutionType resolutionType;
 
     @OneToOne(mappedBy = "taskCreator")
     @JsonManagedReference
@@ -101,22 +98,6 @@ public class Task {
         this.storyTasks = storyTasks;
     }
 
-    public TaskPriority getTaskPriority() {
-        return taskPriority;
-    }
-
-    public void setTaskPriority(TaskPriority taskPriority) {
-        this.taskPriority = taskPriority;
-    }
-
-    public TaskProgress getTaskProgress() {
-        return taskProgress;
-    }
-
-    public void setTaskProgress(TaskProgress taskProgress) {
-        this.taskProgress = taskProgress;
-    }
-
     public User getTaskCreator() {
         return taskCreator;
     }
@@ -135,5 +116,29 @@ public class Task {
 
     public long getId() {
         return id;
+    }
+
+    public PriorityType getPriorityType() {
+        return priorityType;
+    }
+
+    public void setPriorityType(PriorityType priorityType) {
+        this.priorityType = priorityType;
+    }
+
+    public ProgressType getProgressType() {
+        return progressType;
+    }
+
+    public void setProgressType(ProgressType progressType) {
+        this.progressType = progressType;
+    }
+
+    public ResolutionType getResolutionType() {
+        return resolutionType;
+    }
+
+    public void setResolutionType(ResolutionType resolutionType) {
+        this.resolutionType = resolutionType;
     }
 }

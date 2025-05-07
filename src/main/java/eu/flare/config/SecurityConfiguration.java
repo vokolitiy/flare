@@ -56,12 +56,6 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/story/{id}/rename").authenticated()
                     .requestMatchers("/api/v1/task").authenticated()
                     .requestMatchers("/api/v1/task/{id}/rename").authenticated()
-                    .requestMatchers("/api/v1/taskPriorities").authenticated()
-                    .requestMatchers("/api/v1/taskProgress").authenticated()
-                    .requestMatchers("/api/v1/taskResolution").authenticated()
-                    .requestMatchers("/api/v1/storyPriority").authenticated()
-                    .requestMatchers("/api/v1/storyProgress").authenticated()
-                    .requestMatchers("/api/v1/storyResolution").authenticated()
                     .requestMatchers("/api/v1/backlog").authenticated()
                     .requestMatchers("/api/v1/backlog/{id}/stories/add").authenticated()
                     .anyRequest().permitAll();
