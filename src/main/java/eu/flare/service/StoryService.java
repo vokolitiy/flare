@@ -1,14 +1,17 @@
-package eu.flare.service.story;
+package eu.flare.service;
 
 import eu.flare.exceptions.conflicts.TasksNamesConflictException;
+import eu.flare.exceptions.misc.UnknownPriorityTypeException;
+import eu.flare.exceptions.misc.UnknownProgressTypeException;
 import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.*;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
 import eu.flare.model.dto.update.UpdateStoryPriorityDto;
+import eu.flare.model.dto.update.UpdateStoryProgressDto;
 import eu.flare.repository.StoryRepository;
-import eu.flare.repository.UserRepository;
 import eu.flare.repository.TaskRepository;
+import eu.flare.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,14 +55,26 @@ public class StoryService {
     }
 
     @Transactional(rollbackOn = {Exception.class})
-    public Story updateStoryPriority(long id, UpdateStoryPriorityDto dto) throws StoryNotFoundException {
+    public Story updateStoryPriority(long id, UpdateStoryPriorityDto dto) throws StoryNotFoundException, UnknownPriorityTypeException {
         Story story = storyRepository.findById(id)
                 .orElseThrow(() -> new StoryNotFoundException("Story not found"));
-        PriorityType priority = story.getPriorityType();
-        if (priority == null) {
-            return story;
+        PriorityType priorityType = PriorityType.valueOfLabel(dto.name());
+        if (priorityType == null) {
+            throw new UnknownPriorityTypeException("Unknown priority type");
         }
-        story.setPriorityType(PriorityType.valueOfLabel(dto.name()));
+        story.setPriorityType(priorityType);
+        return storyRepository.save(story);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public Story updateStoryProgress(long id, UpdateStoryProgressDto dto) throws StoryNotFoundException, UnknownProgressTypeException {
+        Story story = storyRepository.findById(id)
+                .orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        ProgressType progressType = ProgressType.valueOfLabel(dto.name());
+        if (progressType == null) {
+            throw new UnknownProgressTypeException("Unknown progress type");
+        }
+        story.setProgressType(progressType);
         return storyRepository.save(story);
     }
 

@@ -1,13 +1,16 @@
 package eu.flare.controller.story;
 
 import eu.flare.exceptions.conflicts.TasksNamesConflictException;
+import eu.flare.exceptions.misc.UnknownPriorityTypeException;
+import eu.flare.exceptions.misc.UnknownProgressTypeException;
 import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.Story;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
 import eu.flare.model.dto.update.UpdateStoryPriorityDto;
+import eu.flare.model.dto.update.UpdateStoryProgressDto;
 import eu.flare.model.response.Responses;
-import eu.flare.service.story.StoryService;
+import eu.flare.service.StoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,6 +77,27 @@ public class StoryController {
         } catch (StoryNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new Responses.StoryNotFoundResponse(e.getMessage()));
+        } catch (UnknownPriorityTypeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new Responses.UnknownOperationResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/progress/update")
+    public ResponseEntity<?> updateStoryProgress(
+            @PathVariable("id") long id,
+            @Valid @RequestBody UpdateStoryProgressDto dto
+    ) {
+        try {
+            Story story = storyService.updateStoryProgress(id, dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new Responses.StoryResponse(story));
+        } catch (StoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.StoryNotFoundResponse(e.getMessage()));
+        } catch (UnknownProgressTypeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new Responses.UnknownOperationResponse(e.getMessage()));
         }
     }
 }
