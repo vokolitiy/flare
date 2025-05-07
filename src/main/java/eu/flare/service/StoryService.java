@@ -5,6 +5,7 @@ import eu.flare.exceptions.misc.UnknownPriorityTypeException;
 import eu.flare.exceptions.misc.UnknownProgressTypeException;
 import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.*;
+import eu.flare.model.dto.update.UpdateStoryResolutionDto;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
 import eu.flare.model.dto.update.UpdateStoryPriorityDto;
@@ -75,6 +76,18 @@ public class StoryService {
             throw new UnknownProgressTypeException("Unknown progress type");
         }
         story.setProgressType(progressType);
+        return storyRepository.save(story);
+    }
+
+    @Transactional(rollbackOn = {Exception.class})
+    public Story updateStoryResolution(long id, UpdateStoryResolutionDto dto) throws StoryNotFoundException, UnknownProgressTypeException {
+        Story story = storyRepository.findById(id)
+                .orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        ResolutionType resolutionType = ResolutionType.valueOfLabel(dto.name());
+        if (resolutionType == null) {
+            throw new UnknownProgressTypeException("Unknown progress type");
+        }
+        story.setResolutionType(resolutionType);
         return storyRepository.save(story);
     }
 
