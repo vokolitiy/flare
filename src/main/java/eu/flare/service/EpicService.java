@@ -87,8 +87,8 @@ public class EpicService {
             story.setOriginalEstimate(addStory.originalEstimate());
             story.setRemainingEstimate(addStory.remainingEstimate());
             story.setStoryPoints(addStory.storyPoints());
-            story.setStoryPriorityType(mapStoryPriority(addStory));
-            story.setStoryProgressType(mapStoryProgress(addStory));
+            story.setPriorityType(mapStoryPriority(addStory));
+            story.setProgressType(mapStoryProgress(addStory));
             story.setStoryCreator(findStoryCreator(addStory));
             story.setStoryAssignee(findUserAssignee(addStory));
             story.setEpic(epic);
@@ -132,14 +132,14 @@ public class EpicService {
         return epicRepository.save(epic);
     }
 
-    private StoryProgressType mapStoryProgress(AddStoryDto addStory) {
+    private ProgressType mapStoryProgress(AddStoryDto addStory) {
         String progress = addStory.storyProgressName();
-        return StoryProgressType.valueOfLabel(progress);
+        return ProgressType.valueOfLabel(progress);
     }
 
-    private StoryPriorityType mapStoryPriority(AddStoryDto addStory) {
+    private PriorityType mapStoryPriority(AddStoryDto addStory) {
         String priority = addStory.storyPriorityName();
-        return StoryPriorityType.valueOfLabel(priority);
+        return PriorityType.valueOfLabel(priority);
     }
 
     @Nullable

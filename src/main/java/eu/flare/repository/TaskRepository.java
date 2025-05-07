@@ -1,4 +1,4 @@
-package eu.flare.repository.task;
+package eu.flare.repository;
 
 import eu.flare.model.Task;
 import org.springframework.data.jpa.repository.JpaRepository;

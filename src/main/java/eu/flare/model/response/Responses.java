@@ -75,15 +75,6 @@ public final class Responses {
     public record BacklogResponse(@JsonProperty("backlog") Backlog backlog) {}
     public record BacklogNotFoundResponse(@JsonProperty("error") String error) {}
 
-    public record TaskResolutionsNotFoundResponse(@JsonProperty("error") String error){}
-    public record TaskResolutionsResponse(@JsonProperty("resolutions") List<TaskResolution> resolutions) {}
-
-    public record TaskProgressesNotFoundResponse(@JsonProperty("error") String error){}
-    public record TaskProgressesResponse(@JsonProperty("priorities") List<TaskProgress> progresses) {}
-
-    public record TaskPrioritiesNotFoundResponse(@JsonProperty("error") String error){}
-    public record TaskPrioritiesResponse(@JsonProperty("priorities") List<TaskPriority> priorities) {}
-
     public record TaskNotFoundResponse(@JsonProperty("error") String error){}
     public record TaskResponse(@JsonProperty("task") Task task) {}
     public record TaskUpdatedResponse(@JsonProperty("task") Task task) {}
