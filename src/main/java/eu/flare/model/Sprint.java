@@ -1,10 +1,12 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "sprints")
@@ -20,6 +22,14 @@ public class Sprint {
 
     @UpdateTimestamp
     private Date updatedAt;
+
+    @OneToMany(mappedBy="sprint")
+    @JsonManagedReference
+    private List<Story> stories;
+
+    private Date startDate;
+
+    private boolean isStarted;
 
     private Date completeDate;
 
@@ -51,5 +61,29 @@ public class Sprint {
 
     public void setCompleted(boolean completed) {
         isCompleted = completed;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public boolean isStarted() {
+        return isStarted;
+    }
+
+    public void setStarted(boolean started) {
+        isStarted = started;
+    }
+
+    public List<Story> getStories() {
+        return stories;
+    }
+
+    public void setStories(List<Story> stories) {
+        this.stories = stories;
     }
 }
