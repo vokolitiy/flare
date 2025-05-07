@@ -69,6 +69,11 @@ public class Story {
     @JsonManagedReference
     private List<Task> storyTasks;
 
+    @ManyToOne
+    @JoinColumn(name="sprint_id")
+    @JsonBackReference
+    private Sprint sprint;
+
     public String getName() {
         return name;
     }
@@ -199,5 +204,13 @@ public class Story {
 
     public void setResolutionType(ResolutionType resolutionType) {
         this.resolutionType = resolutionType;
+    }
+
+    public Sprint getSprint() {
+        return sprint;
+    }
+
+    public void setSprint(Sprint sprint) {
+        this.sprint = sprint;
     }
 }

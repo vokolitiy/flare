@@ -88,4 +88,9 @@ public final class Responses {
     public record UserLoggedOutSuccessfullyResponse(@JsonProperty("message") String message) {}
 
     public record UnknownOperationResponse(@JsonProperty("error") String error) {}
+    public record SprintNotFoundResponse(@JsonProperty("error") String error) {}
+    public record SprintResponse(@JsonProperty("sprint") Sprint sprint) {}
+    public record SprintAlreadyStartedResponse(@JsonProperty("error") String error) {}
+    public record SprintNotStartedResponse(@JsonProperty("error") String error) {}
+    public record SprintAlreadyCompletedResponse(@JsonProperty("error") String error) {}
 }
