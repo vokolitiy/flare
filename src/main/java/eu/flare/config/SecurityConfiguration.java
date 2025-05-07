@@ -54,6 +54,8 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/story").authenticated()
                     .requestMatchers("/api/v1/story/{id}/tasks/add").authenticated()
                     .requestMatchers("/api/v1/story/{id}/rename").authenticated()
+                    .requestMatchers("/api/v1/story/{id}/priority/update").authenticated()
+                    .requestMatchers("/api/v1/story/{id}/progress/update").authenticated()
                     .requestMatchers("/api/v1/task").authenticated()
                     .requestMatchers("/api/v1/task/{id}/rename").authenticated()
                     .requestMatchers("/api/v1/backlog").authenticated()
