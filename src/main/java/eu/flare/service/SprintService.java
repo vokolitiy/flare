@@ -5,7 +5,6 @@ import eu.flare.exceptions.empty.RequestBodyEmptyException;
 import eu.flare.exceptions.misc.SprintAlreadyCompletedException;
 import eu.flare.exceptions.misc.SprintNotStartedException;
 import eu.flare.exceptions.notfound.SprintNotFoundException;
-import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.Sprint;
 import eu.flare.model.Story;
 import eu.flare.model.dto.add.AddSprintStoryDto;
