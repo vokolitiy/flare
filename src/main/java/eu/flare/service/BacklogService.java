@@ -79,39 +79,5 @@ public class BacklogService {
             backlog.setBacklogStories(backlogStories);
             return backlogRepository.save(backlog);
         }
-        /*List<Story> backlogStories = backlog.getBacklogStories();
-        if (backlogStories.isEmpty()) {
-            List<Story> storiesToAdd = dtoList.stream().map(addBacklogStoryDto -> {
-                Optional<Story> storyOptional = storyRepository.findById(addBacklogStoryDto.storyId());
-                if (storyOptional.isPresent()) {
-                    Story story = storyOptional.get();
-                    story.setBacklog(backlog);
-                    return story;
-                } else {
-                    throw new IllegalStateException("Story not found");
-                }
-            }).collect(Collectors.toList());
-
-            backlog.setBacklogStories(storiesToAdd);
-            return backlogRepository.save(backlog);
-        } else {
-            for (AddBacklogStoryDto dto : dtoList) {
-                long storyId = dto.storyId();
-                boolean match = backlogStories.stream().anyMatch(story -> story.getId() == storyId);
-                if (!match) {
-                    Optional<Story> storyOptional = storyRepository.findById(storyId);
-                    if (storyOptional.isPresent()) {
-                        backlogStories.add(storyOptional.get());
-                    } else {
-                        throw new StoryNotFoundException("Story not found");
-                    }
-                } else {
-                    backlog.setBacklogStories(backlogStories);
-                    return backlogRepository.save(backlog);
-                }
-            }
-        }
-        return backlog;
-    }*/
     }
 }
