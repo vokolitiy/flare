@@ -74,6 +74,22 @@ public class Story {
     @JsonBackReference
     private Sprint sprint;
 
+    @ManyToMany(mappedBy = "todoStories")
+    @JsonBackReference
+    private List<Board> boardsTodoStories = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "inProgressStories")
+    @JsonBackReference
+    private List<Board> boardsInProgressStories = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "reviewStories")
+    @JsonBackReference
+    private List<Board> boardsReviewStories = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "doneStories")
+    @JsonBackReference
+    private List<Board> boardsDoneStories = new ArrayList<>();
+
     public String getName() {
         return name;
     }

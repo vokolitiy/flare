@@ -93,4 +93,8 @@ public final class Responses {
     public record SprintAlreadyStartedResponse(@JsonProperty("error") String error) {}
     public record SprintNotStartedResponse(@JsonProperty("error") String error) {}
     public record SprintAlreadyCompletedResponse(@JsonProperty("error") String error) {}
+
+    public record BoardNotFoundResponse(@JsonProperty("error") String error) {}
+    public record BoardResponse(@JsonProperty("board") Board board) {}
+    public record BoardCreationConflictResponse(@JsonProperty("error") String error) {}
 }
