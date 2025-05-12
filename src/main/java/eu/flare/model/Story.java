@@ -229,4 +229,36 @@ public class Story {
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
     }
+
+    public List<Board> getBoardsTodoStories() {
+        return boardsTodoStories;
+    }
+
+    public void setBoardsTodoStories(List<Board> boardsTodoStories) {
+        this.boardsTodoStories = boardsTodoStories;
+    }
+
+    public List<Board> getBoardsInProgressStories() {
+        return boardsInProgressStories;
+    }
+
+    public void setBoardsInProgressStories(List<Board> boardsInProgressStories) {
+        this.boardsInProgressStories = boardsInProgressStories;
+    }
+
+    public List<Board> getBoardsReviewStories() {
+        return boardsReviewStories;
+    }
+
+    public void setBoardsReviewStories(List<Board> boardsReviewStories) {
+        this.boardsReviewStories = boardsReviewStories;
+    }
+
+    public List<Board> getBoardsDoneStories() {
+        return boardsDoneStories;
+    }
+
+    public void setBoardsDoneStories(List<Board> boardsDoneStories) {
+        this.boardsDoneStories = boardsDoneStories;
+    }
 }
