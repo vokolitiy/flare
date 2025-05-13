@@ -84,7 +84,9 @@ public class AuthController {
                         .body(new Responses.UserNotFoundErrorResponse("User not found"));
             } else {
                 User user = authService.authenticate(loginDto);
-                String token = jwtService.generateToken(user.getUsername(), user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+                String token = jwtService.generateToken(
+                        user.getUsername(),
+                        user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
                 authService.saveRefreshToken(token);
                 Responses.UserLoggedInResponse response = new Responses.UserLoggedInResponse(token, jwtService.getJwtExpiration());
                 return ResponseEntity.status(HttpStatus.OK)
