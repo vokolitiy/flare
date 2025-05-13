@@ -74,6 +74,22 @@ public class Story {
     @JsonBackReference
     private Sprint sprint;
 
+    @ManyToMany(mappedBy = "todoStories")
+    @JsonBackReference
+    private List<Board> boardsTodoStories = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "inProgressStories")
+    @JsonBackReference
+    private List<Board> boardsInProgressStories = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "reviewStories")
+    @JsonBackReference
+    private List<Board> boardsReviewStories = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "doneStories")
+    @JsonBackReference
+    private List<Board> boardsDoneStories = new ArrayList<>();
+
     public String getName() {
         return name;
     }
@@ -212,5 +228,37 @@ public class Story {
 
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
+    }
+
+    public List<Board> getBoardsTodoStories() {
+        return boardsTodoStories;
+    }
+
+    public void setBoardsTodoStories(List<Board> boardsTodoStories) {
+        this.boardsTodoStories = boardsTodoStories;
+    }
+
+    public List<Board> getBoardsInProgressStories() {
+        return boardsInProgressStories;
+    }
+
+    public void setBoardsInProgressStories(List<Board> boardsInProgressStories) {
+        this.boardsInProgressStories = boardsInProgressStories;
+    }
+
+    public List<Board> getBoardsReviewStories() {
+        return boardsReviewStories;
+    }
+
+    public void setBoardsReviewStories(List<Board> boardsReviewStories) {
+        this.boardsReviewStories = boardsReviewStories;
+    }
+
+    public List<Board> getBoardsDoneStories() {
+        return boardsDoneStories;
+    }
+
+    public void setBoardsDoneStories(List<Board> boardsDoneStories) {
+        this.boardsDoneStories = boardsDoneStories;
     }
 }

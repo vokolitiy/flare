@@ -27,6 +27,10 @@ public class Sprint {
     @JsonManagedReference
     private List<Story> stories;
 
+    @OneToOne(mappedBy = "sprint")
+    @JsonManagedReference
+    private Board board;
+
     private Date startDate;
 
     private boolean isStarted;
@@ -85,5 +89,13 @@ public class Sprint {
 
     public void setStories(List<Story> stories) {
         this.stories = stories;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
     }
 }
