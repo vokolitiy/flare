@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Service
 public class BoardService {
@@ -55,7 +52,7 @@ public class BoardService {
             throw new SprintAlreadyHasBoardException("Sprint already has a board");
         } else {
             board.setSprint(sprint);
-            updateBoardStories(board, sprint);
+            addBoardStories(board, sprint);
             sprint.setBoard(board);
             sprintRepository.save(sprint);
             return boardRepository.save(board);
@@ -74,8 +71,11 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
-    private void updateBoardStories(Board board, Sprint sprint) {
-        List<Story> sprintStories = sprint.getStories();
+    public Board refreshBoardStories(long boardId) throws BoardNotFoundException {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException("Board not found"));
+        Sprint assignedSprint = board.getSprint();
+        List<Story> sprintStories = assignedSprint.getStories();
         List<Story> sprintTodoStories = findStories(sprintStories, ProgressType.TODO);
         List<Story> sprintInProgressStories = findStories(sprintStories, ProgressType.IN_PROGRESS);
         List<Story> sprintInReviewStories = findStories(sprintStories, ProgressType.IN_REVIEW);
@@ -85,9 +85,33 @@ public class BoardService {
         updateStoryBoards(board, sprintInProgressStories, ProgressType.IN_PROGRESS);
         updateStoryBoards(board, sprintInReviewStories, ProgressType.IN_REVIEW);
         updateStoryBoards(board, sprintDoneStories, ProgressType.DONE);
+
+        return boardRepository.save(board);
+    }
+
+    private void addBoardStories(Board board, Sprint sprint) {
+        List<Story> sprintStories = sprint.getStories();
+        List<Story> sprintTodoStories = findStories(sprintStories, ProgressType.TODO);
+        List<Story> sprintInProgressStories = findStories(sprintStories, ProgressType.IN_PROGRESS);
+        List<Story> sprintInReviewStories = findStories(sprintStories, ProgressType.IN_REVIEW);
+        List<Story> sprintDoneStories = findStories(sprintStories, ProgressType.DONE);
+
+        addStoryBoards(board, sprintTodoStories, ProgressType.TODO);
+        addStoryBoards(board, sprintInProgressStories, ProgressType.IN_PROGRESS);
+        addStoryBoards(board, sprintInReviewStories, ProgressType.IN_REVIEW);
+        addStoryBoards(board, sprintDoneStories, ProgressType.DONE);
     }
 
     private void updateStoryBoards(Board board, List<Story> stories, ProgressType progressType) {
+        switch (progressType) {
+            case TODO -> board.setTodoStories(stories);
+            case IN_PROGRESS -> board.setInProgressStories(stories);
+            case IN_REVIEW -> board.setReviewStories(stories);
+            case DONE -> board.setDoneStories(stories);
+        }
+    }
+
+    private void addStoryBoards(Board board, List<Story> stories, ProgressType progressType) {
         setBoardStories(board, stories, progressType);
         stories.forEach(story -> {
             List<Board> boards = getStoryBoards(story, progressType);

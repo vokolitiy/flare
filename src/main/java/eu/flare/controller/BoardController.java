@@ -66,4 +66,15 @@ public class BoardController {
                     .body(new Responses.BoardCreationConflictResponse(e.getMessage()));
         }
     }
+
+    @PutMapping("/{id}/refresh")
+    public ResponseEntity<?> refreshBoard(@PathVariable("id") long boardId) {
+        try {
+            Board board = boardService.refreshBoardStories(boardId);
+            return ResponseEntity.ok(new Responses.BoardResponse(board));
+        } catch (BoardNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.BoardNotFoundResponse(e.getMessage()));
+        }
+    }
 }
