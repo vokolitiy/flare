@@ -7,9 +7,7 @@ import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.Story;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
-import eu.flare.model.dto.update.UpdateStoryPriorityDto;
-import eu.flare.model.dto.update.UpdateStoryProgressDto;
-import eu.flare.model.dto.update.UpdateStoryResolutionDto;
+import eu.flare.model.dto.update.*;
 import eu.flare.model.response.Responses;
 import eu.flare.service.StoryService;
 import jakarta.validation.Valid;
@@ -117,6 +115,44 @@ public class StoryController {
         } catch (UnknownProgressTypeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new Responses.UnknownOperationResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/estimate/update")
+    public ResponseEntity<?> updateOriginalEstimate(
+            @PathVariable("id") long id,
+            @RequestBody UpdateEstimateDto dto
+    ) {
+        try {
+            Story story = storyService.updateStoryOriginalEstimate(id, dto);
+            return ResponseEntity.ok(new Responses.StoryResponse(story));
+        } catch (StoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.StoryNotFoundResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/estimate/remaining/update")
+    public ResponseEntity<?> updateRemainingEstimate(
+            @PathVariable("id") long id,
+            @RequestBody UpdateEstimateDto dto) {
+        try {
+            Story story = storyService.updateRemainingEstimate(id, dto);
+            return ResponseEntity.ok(new Responses.StoryResponse(story));
+        } catch (StoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.StoryNotFoundResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/storypoints/update")
+    public ResponseEntity<?> updateStoryPoints(@PathVariable("id") long id, @RequestBody UpdateStoryPointsDto dto) {
+        try {
+            Story story = storyService.updateStoryPoints(id, dto);
+            return ResponseEntity.ok(new Responses.StoryResponse(story));
+        } catch (StoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.StoryNotFoundResponse(e.getMessage()));
         }
     }
 }

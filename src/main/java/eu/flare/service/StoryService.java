@@ -7,9 +7,7 @@ import eu.flare.exceptions.notfound.StoryNotFoundException;
 import eu.flare.model.*;
 import eu.flare.model.dto.add.AddTaskDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
-import eu.flare.model.dto.update.UpdateStoryPriorityDto;
-import eu.flare.model.dto.update.UpdateStoryProgressDto;
-import eu.flare.model.dto.update.UpdateStoryResolutionDto;
+import eu.flare.model.dto.update.*;
 import eu.flare.repository.StoryRepository;
 import eu.flare.repository.TaskRepository;
 import eu.flare.repository.UserRepository;
@@ -128,18 +126,41 @@ public class StoryService {
         }
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public Story renameStory(long id, RenameStoryDto dto) throws StoryNotFoundException {
-        Optional<Story> storyOptional = storyRepository.findById(id);
-        if (storyOptional.isEmpty()) {
-            throw new StoryNotFoundException("Story not found");
-        }
-
-        Story story = storyOptional.get();
+        Story story = storyRepository.findById(id).orElseThrow(() -> new StoryNotFoundException("Story not found"));
         story.setName(dto.name());
         return storyRepository.save(story);
     }
 
     private boolean taskExists(String taskName) {
         return taskRepository.findByName(taskName).isPresent();
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Story updateStoryOriginalEstimate(long id, UpdateEstimateDto dto) throws StoryNotFoundException {
+        Story story = storyRepository.findById(id).orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        story.setOriginalEstimate(dto.millis());
+        return storyRepository.save(story);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Story updateRemainingEstimate(long id, UpdateEstimateDto dto) throws StoryNotFoundException {
+        Story story = storyRepository.findById(id).orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        long remainingEstimate = dto.millis();
+        long originalEstimate = story.getOriginalEstimate();
+        if (remainingEstimate <= originalEstimate) {
+            story.setRemainingEstimate(dto.millis());
+            return storyRepository.save(story);
+        } else {
+            throw new UnsupportedOperationException("Can't set remainingEstimate greater than original");
+        }
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Story updateStoryPoints(long id, UpdateStoryPointsDto dto) throws StoryNotFoundException {
+        Story story = storyRepository.findById(id).orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        story.setStoryPoints(dto.storyPoints());
+        return storyRepository.save(story);
     }
 }
