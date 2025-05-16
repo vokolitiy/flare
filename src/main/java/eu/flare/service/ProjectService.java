@@ -55,6 +55,10 @@ public class ProjectService {
         return projectRepository.findByName(name);
     }
 
+    public List<Project> findAll() {
+        return projectRepository.findAll();
+    }
+
     public Optional<Project> findProject(long id) {
         return projectRepository.findById(id);
     }
@@ -207,22 +211,27 @@ public class ProjectService {
         }).collect(Collectors.toList());
     }
 
-    private Project filterEpicsAndCreate(Project project, AddEpicsDto dto) {
+    private Project filterEpicsAndCreate(Project project, AddEpicsDto dto) throws EpicNamesConflictException {
         List<Epic> projectEpics = project.getEpics();
         List<String> projectEpicNames = projectEpics.stream().map(Epic::getName).toList();
         List<String> epicNames = dto.epicNames();
-        epicNames.stream()
+        List<String> filtered = epicNames.stream()
                 .filter(second -> projectEpicNames.stream().noneMatch(first -> first.equals(second)))
-                .map(name -> {
-                    Epic epic = new Epic();
-                    epic.setName(name);
-                    epic.setProject(project);
-                    return epic;
-                }).forEach(epic -> {
-                    projectEpics.add(epic);
-                    epicRepository.save(epic);
-                    project.setEpics(projectEpics);
-                });
+                .toList();
+        if (filtered.isEmpty()) {
+            throw new EpicNamesConflictException("Unable to add epic");
+        } else {
+            filtered.stream().map(name -> {
+                Epic epic = new Epic();
+                epic.setName(name);
+                epic.setProject(project);
+                return epic;
+            }).forEach(epic -> {
+                projectEpics.add(epic);
+                epicRepository.save(epic);
+                project.setEpics(projectEpics);
+            });
+        }
 
         return project;
     }
@@ -241,12 +250,7 @@ public class ProjectService {
                         return epic;
                     }
                 })
-                .forEach(new Consumer<Epic>() {
-                    @Override
-                    public void accept(Epic epic) {
-                        epicRepository.save(epic);
-                    }
-                });
+                .forEach(epicRepository::save);
 
         return project;
     }
