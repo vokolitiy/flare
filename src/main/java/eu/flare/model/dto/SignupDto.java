@@ -16,6 +16,8 @@ public record SignupDto(
         @JsonProperty("last_name")
         @NotBlank(message = "Last name can't be blank")
         String lastName,
+        @JsonProperty("middle_name")
+        String middleName,
         @JsonProperty("email")
         @NotBlank(message = "Email can't be blank")
         @Size(max = 20, message = "Email is too long")

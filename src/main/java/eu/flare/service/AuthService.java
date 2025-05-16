@@ -86,6 +86,7 @@ public class AuthService {
         appUser.setUsername(signupDto.username());
         appUser.setFirstName(signupDto.firstName());
         appUser.setLastName(signupDto.lastName());
+        appUser.setMiddleName(signupDto.middleName());
         appUser.setAccountNonLocked(true);
         appUser.setAccountNonExpired(true);
         appUser.setCredentialsNonExpired(true);
