@@ -41,7 +41,7 @@ public class EpicService {
         this.backlogRepository = backlogRepository;
     }
 
-    public Epic addStoriesForEpic(long id, List<AddStoryDto> dto) throws EpicNotFoundException, RequestBodyEmptyException, UsernameNotFoundException, StoryNamesConflictException {
+    public Epic addStoriesForEpic(long id, List<AddStoryDto> dto) throws EpicNotFoundException, RequestBodyEmptyException, StoryNamesConflictException {
         Optional<Epic> epicOptional = epicRepository.findById(id);
         if (epicOptional.isEmpty()) {
             throw new EpicNotFoundException("Epic with given id %s not found".formatted(id));
@@ -91,6 +91,7 @@ public class EpicService {
             story.setProgressType(mapStoryProgress(addStory));
             story.setStoryCreator(findStoryCreator(addStory));
             story.setStoryAssignee(findUserAssignee(addStory));
+            story.setStoryWatchers(findStoryWatchers(addStory));
             story.setEpic(epic);
 
             Story savedStory = storyRepository.save(story);

@@ -50,9 +50,6 @@ public class EpicController {
         } catch (RequestBodyEmptyException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new Responses.RequestBodyEmptyResponse(e.getMessage()));
-        } catch (UsernameNotFoundException exception) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new Responses.UserNotFoundException(exception.getMessage()));
         } catch (StoryNamesConflictException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new Responses.StoryCreationException(e.getMessage()));

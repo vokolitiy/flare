@@ -3,10 +3,8 @@ package eu.flare;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.flare.model.dto.EmptyProjectDto;
-import eu.flare.model.dto.add.AddBacklogDto;
-import eu.flare.model.dto.add.AddEpicsDto;
-import eu.flare.model.dto.add.AddMembersDto;
-import eu.flare.model.dto.add.AddSprintDto;
+import eu.flare.model.dto.add.*;
+import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
 import eu.flare.repository.UserRepository;
 import eu.flare.service.AuthService;
@@ -325,6 +323,119 @@ public class ProjectControllerTest {
                                 .content(testAddEpicsJson(List.of("Epic ONE", "Epic TWO")))
                 ).andExpect(status().isOk())
                 .andReturn();
+    }
+
+    @Test
+    @Order(22)
+    public void test_add_stories_to_epic() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/epic/1/stories/add").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testAddStoryJson(
+                                List.of(new AddStoryDto("Implement bottom navigation",
+                                        "Implement bottom navigation using Jetpack navigation library",
+                                        86400,
+                                        8400,
+                                        90,
+                                        30,
+                                        "Major",
+                                        "Todo",
+                                        "admin_admin",
+                                        "admin_admin",
+                                        List.of("admin_admin")))
+                        ))).andExpect(status().isCreated());
+    }
+
+    @Test
+    @Order(23)
+    public void test_add_stories_to_nonexistent_epic() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/epic/100000000/stories/add").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testAddStoryJson(
+                                List.of(new AddStoryDto("Implement bottom navigation",
+                                        "Implement bottom navigation using Jetpack navigation library",
+                                        86400,
+                                        8400,
+                                        90,
+                                        30,
+                                        "Major",
+                                        "Todo",
+                                        "admin_admin",
+                                        "admin_admin",
+                                        List.of("admin_admin")))
+                        ))).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(24)
+    public void test_add_empty_stories_to_epic() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/epic/1/stories/add").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testAddStoryJson(Collections.emptyList())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(25)
+    public void test_add_duplicates_to_epic() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/epic/1/stories/add").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testAddStoryJson(
+                                List.of(new AddStoryDto("Implement bottom navigation",
+                                        "Implement bottom navigation using Jetpack navigation library",
+                                        86400,
+                                        8400,
+                                        90,
+                                        30,
+                                        "Major",
+                                        "Todo",
+                                        "admin_admin",
+                                        "admin_admin",
+                                        List.of("admin_admin")))
+                        ))).andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(26)
+    public void test_rename_epic() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/epic/1/rename").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testRenameJson("Renamed epic"))).andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(27)
+    public void test_rename_non_existent_epic() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/epic/100000000000000/rename").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testRenameJson("Renamed epic"))).andExpect(status().isNotFound());
+    }
+
+    private String testRenameJson(String renamedEpic) {
+        try {
+            return objectMapper.writeValueAsString(new RenameEpicDto(renamedEpic));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String testAddStoryJson(List<AddStoryDto> dtos) {
+        try {
+            return objectMapper.writeValueAsString(dtos);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String testCreateProjectJson(String newProject) {
