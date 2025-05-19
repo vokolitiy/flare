@@ -1,5 +1,6 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Privilege {
     private long id;
     private String name;
     @ManyToMany(mappedBy = "privileges")
+    @JsonBackReference
     private List<Role> roles = new ArrayList<>();
 
     public String getName() {

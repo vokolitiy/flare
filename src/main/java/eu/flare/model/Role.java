@@ -1,5 +1,7 @@
 package eu.flare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class Role {
     private long id;
     private String name;
     @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<User> users = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -22,6 +25,7 @@ public class Role {
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id")
             )
+    @JsonManagedReference
     private List<Privilege> privileges = new ArrayList<>();
 
     public String getName() {

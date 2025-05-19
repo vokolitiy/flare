@@ -44,6 +44,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
             )
+    @JsonManagedReference
     private List<Role> roles = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
