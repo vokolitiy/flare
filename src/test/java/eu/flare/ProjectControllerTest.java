@@ -3,22 +3,16 @@ package eu.flare;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.flare.model.dto.EmptyProjectDto;
-import eu.flare.model.dto.LoginDto;
 import eu.flare.model.dto.add.AddBacklogDto;
 import eu.flare.model.dto.add.AddEpicsDto;
 import eu.flare.model.dto.add.AddMembersDto;
 import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
-import eu.flare.model.response.Responses;
 import eu.flare.repository.UserRepository;
 import eu.flare.service.AuthService;
 import eu.flare.service.JwtService;
 import eu.flare.service.ProjectService;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,28 +59,19 @@ public class ProjectControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuthenticationTestHelper helper;
+
+    private String authToken;
+
+    @BeforeEach
+    public void beforeTests() throws Exception {
+        authToken = helper.authToken();
+    }
+
     @Test
     @Order(1)
     public void test_create_project() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         post("/api/v1/project/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -100,25 +84,6 @@ public class ProjectControllerTest {
     @Test
     @Order(2)
     public void test_create_project_duplicate() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         post("/api/v1/project/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -131,25 +96,6 @@ public class ProjectControllerTest {
     @Test
     @Order(3)
     public void test_create_project_emptyname() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         post("/api/v1/project/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -162,25 +108,6 @@ public class ProjectControllerTest {
     @Order(4)
     @Test
     public void test_create_project_verylong() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         post("/api/v1/project/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -193,25 +120,6 @@ public class ProjectControllerTest {
     @Test
     @Order(5)
     public void test_project_query_for_epics() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         get("/api/v1/project/1/epics").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -223,25 +131,6 @@ public class ProjectControllerTest {
     @Test
     @Order(6)
     public void test_project_add_epics() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                 put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -261,25 +150,6 @@ public class ProjectControllerTest {
     @Test
     @Order(7)
     public void test_add_duplicate_epics() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -292,25 +162,6 @@ public class ProjectControllerTest {
     @Test
     @Order(8)
     public void test_add_empty_epics() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -323,25 +174,6 @@ public class ProjectControllerTest {
     @Test
     @Order(9)
     public void test_add_epic_to_nonexistent_project() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/100/epics/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -354,25 +186,6 @@ public class ProjectControllerTest {
     @Test
     @Order(10)
     public void test_add_project_members() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/members/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -385,25 +198,6 @@ public class ProjectControllerTest {
     @Test
     @Order(11)
     public void test_add_nonexistent_project_members() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/members/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -416,25 +210,6 @@ public class ProjectControllerTest {
     @Test
     @Order(12)
     public void test_add_project_members_to_nonexistent_project() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/100000/members/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -447,25 +222,6 @@ public class ProjectControllerTest {
     @Test
     @Order(13)
     public void test_rename_project() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/rename").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -478,25 +234,6 @@ public class ProjectControllerTest {
     @Test
     @Order(14)
     public void test_rename_non_existent_project() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/100000000/rename").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -509,25 +246,6 @@ public class ProjectControllerTest {
     @Test
     @Order(15)
     public void test_add_sprints() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/sprints/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -540,25 +258,6 @@ public class ProjectControllerTest {
     @Test
     @Order(16)
     public void test_add_sprint_tononexistent_project() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/10000000/sprints/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -571,25 +270,6 @@ public class ProjectControllerTest {
     @Test
     @Order(17)
     public void test_add_duplicate_sprint_name() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/sprints/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -602,25 +282,6 @@ public class ProjectControllerTest {
     @Test
     @Order(18)
     public void test_create_backlog() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/backlog/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -633,25 +294,6 @@ public class ProjectControllerTest {
     @Test
     @Order(19)
     public void test_create_backlog_for_nonexistent_project() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1000000/backlog/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -664,25 +306,6 @@ public class ProjectControllerTest {
     @Test
     @Order(20)
     public void test_create_duplicate_backlog() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/backlog/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -695,25 +318,6 @@ public class ProjectControllerTest {
     @Test
     @Order(21)
     public void test_add_mixed_epics() throws Exception {
-        Assertions.assertThat(userRepository.findAll()).isNotEmpty();
-        String username = userRepository.findAll().getFirst().getUsername();
-        String password = "admin_admin";
-        String loginJson = testLoginJson(username, password);
-        MvcResult result = mockMvc.perform(
-                        post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(loginJson)
-                ).andExpect(status().isOk())
-                .andReturn();
-        Assertions.assertThat(result).isNotNull();
-        String json = result.getResponse().getContentAsString();
-        Assertions.assertThat(json).isNotEmpty();
-
-        Responses.UserLoggedInResponse response = objectMapper.readValue(json, Responses.UserLoggedInResponse.class);
-        String token = response.token();
-        Assertions.assertThat(token).isNotEmpty();
-        String authToken = "Bearer " + token;
-
         mockMvc.perform(
                         put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -726,16 +330,6 @@ public class ProjectControllerTest {
     private String testCreateProjectJson(String newProject) {
         try {
             return objectMapper.writeValueAsString(new EmptyProjectDto(newProject));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLoginJson(String username, String password) {
-        try {
-            return objectMapper.writeValueAsString(new LoginDto(
-                    username, password
-            ));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
