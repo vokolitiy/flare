@@ -9,7 +9,6 @@ import eu.flare.model.dto.CreateBoardDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.BoardService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

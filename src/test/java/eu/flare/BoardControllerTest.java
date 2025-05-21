@@ -1,11 +1,7 @@
 package eu.flare;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import eu.flare.model.dto.CreateBoardDto;
-import eu.flare.model.dto.EmptyProjectDto;
-import eu.flare.model.dto.add.AddSprintDto;
 import eu.flare.model.response.Responses;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -22,9 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.text.MessageFormat;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -35,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class BoardControllerTest {
+public class BoardControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private AuthenticationTestHelper helper;
@@ -182,29 +176,5 @@ public class BoardControllerTest {
                 put("/api/v1/board/10000/refresh").accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
         ).andExpect(status().isNotFound());
-    }
-
-    private String testCreateBoardJson(String board) {
-        try {
-            return objectMapper.writeValueAsString(new CreateBoardDto(board));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAddSprintJson(String name) {
-        try {
-            return objectMapper.writeValueAsString(new AddSprintDto(name));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testCreateProjectJson(String newProject) {
-        try {
-            return objectMapper.writeValueAsString(new EmptyProjectDto(newProject));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

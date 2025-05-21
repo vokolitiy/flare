@@ -1,9 +1,6 @@
 package eu.flare;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.flare.model.dto.LoginDto;
-import eu.flare.model.dto.SignupDto;
 import eu.flare.model.response.Responses;
 import eu.flare.service.AuthService;
 import eu.flare.service.JwtService;
@@ -21,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
@@ -30,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
-public class AuthControllerTest {
+public class AuthControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -194,115 +191,5 @@ public class AuthControllerTest {
                                 .header(HttpHeaders.AUTHORIZATION, bearerToken)
                 ).andExpect(status().isOk())
                 .andReturn();
-    }
-
-    private String testAuthJson() {
-        try {
-            return objectMapper.writeValueAsString(new SignupDto(
-                    "Testsub", "Subject", "Averages", "Joei","testsub@email.com", "Traders", "USER"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAuthJsonEmptyEmail() {
-        try {
-            return objectMapper.writeValueAsString(new SignupDto(
-                    "Testsub Sub", "Subject", "Averages", "Joei","", "Traders", "USER"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAuthJsonTooLongEmail() {
-        try {
-            return objectMapper.writeValueAsString(new SignupDto(
-                    "Testsub Subb", "Subject", "Averages", "Joei","testsubsubsubsubsubsubsubsubsubsubtestsubsubsubsubsubsubsubsubsubsub@email.com", "Traders", "USER"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAuthEmptyJson() {
-        try {
-            return objectMapper.writeValueAsString(new SignupDto(
-                    "", "", "", "","", "", ""
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLoginJson() {
-        try {
-            return objectMapper.writeValueAsString(new LoginDto(
-                    "Testsub", "Traders"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLoginJsonEmptyUsername() {
-        try {
-            return objectMapper.writeValueAsString(new LoginDto(
-                    "", "Traders"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLoginJsonEmptyPassword() {
-        try {
-            return objectMapper.writeValueAsString(new LoginDto(
-                    "Testsub", ""
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLoginJsonEmptyPasswordAndUser() {
-        try {
-            return objectMapper.writeValueAsString(new LoginDto(
-                    "", ""
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLoginJsonNonExistentUser() {
-        try {
-            return objectMapper.writeValueAsString(new LoginDto(
-                    "Testsub DoesnotExist", "Traders"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLogoutUser() {
-        try {
-            return objectMapper.writeValueAsString(new SignupDto(
-                    "Testsub Logout", "Subject", "Averages", "Joei","logout@email.com", "Traders", "USER"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testLogoutJson() {
-        try {
-            return objectMapper.writeValueAsString(new LoginDto(
-                    "Testsub Logout", "Traders"
-            ));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

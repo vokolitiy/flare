@@ -1,17 +1,11 @@
 package eu.flare;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
-import eu.flare.model.dto.EmptyProjectDto;
-import eu.flare.model.dto.add.*;
-import eu.flare.model.dto.rename.RenameEpicDto;
-import eu.flare.model.dto.rename.RenameProjectDto;
+import eu.flare.model.dto.add.AddStoryDto;
 import eu.flare.repository.UserRepository;
 import eu.flare.service.AuthService;
 import eu.flare.service.JwtService;
 import eu.flare.service.ProjectService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -41,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
         locations = "classpath:application-integrationtest.properties")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ProjectControllerTest {
+public class ProjectControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private ProjectService projectService;
@@ -121,7 +112,7 @@ public class ProjectControllerTest {
     @Test
     @Order(5)
     public void test_project_query_for_epics() throws Exception {
-        Integer id = getProjectId("ProjectControllerTest");
+        Integer id = getProjectId("ProjectControllerTest", authToken);
 
         mockMvc.perform(
                         get(MessageFormat.format("/api/v1/project/{0}/epics", id)).contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +125,7 @@ public class ProjectControllerTest {
     @Test
     @Order(6)
     public void test_project_add_epics() throws Exception {
-        Integer id = getProjectId("ProjectControllerTest");
+        Integer id = getProjectId("ProjectControllerTest", authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -155,7 +146,7 @@ public class ProjectControllerTest {
     @Test
     @Order(7)
     public void test_add_duplicate_epics() throws Exception {
-        Integer id = getProjectId("ProjectControllerTest");
+        Integer id = getProjectId("ProjectControllerTest", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -169,7 +160,7 @@ public class ProjectControllerTest {
     @Test
     @Order(8)
     public void test_add_empty_epics() throws Exception {
-        Integer id = getProjectId("ProjectControllerTest");
+        Integer id = getProjectId("ProjectControllerTest", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -195,7 +186,7 @@ public class ProjectControllerTest {
     @Test
     @Order(10)
     public void test_add_project_members() throws Exception {
-        Integer id = getProjectId("ProjectControllerTest");
+        Integer id = getProjectId("ProjectControllerTest", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/members/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -209,7 +200,7 @@ public class ProjectControllerTest {
     @Test
     @Order(11)
     public void test_add_nonexistent_project_members() throws Exception {
-        Integer id = getProjectId("ProjectControllerTest");
+        Integer id = getProjectId("ProjectControllerTest", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/members/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -235,7 +226,7 @@ public class ProjectControllerTest {
     @Test
     @Order(13)
     public void test_rename_project() throws Exception {
-        Integer id = getProjectId("ProjectControllerTest");
+        Integer id = getProjectId("ProjectControllerTest", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/rename", id)).contentType(MediaType.APPLICATION_JSON)
@@ -261,7 +252,7 @@ public class ProjectControllerTest {
     @Test
     @Order(15)
     public void test_add_sprints() throws Exception {
-        Integer id = getProjectId("New Project XFS");
+        Integer id = getProjectId("New Project XFS", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/sprints/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -287,7 +278,7 @@ public class ProjectControllerTest {
     @Test
     @Order(17)
     public void test_add_duplicate_sprint_name() throws Exception {
-        Integer id = getProjectId("New Project XFS");
+        Integer id = getProjectId("New Project XFS", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/sprints/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -301,7 +292,7 @@ public class ProjectControllerTest {
     @Test
     @Order(18)
     public void test_create_backlog() throws Exception {
-        Integer id = getProjectId("New Project XFS");
+        Integer id = getProjectId("New Project XFS", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/backlog/create", id)).contentType(MediaType.APPLICATION_JSON)
@@ -327,7 +318,7 @@ public class ProjectControllerTest {
     @Test
     @Order(20)
     public void test_create_duplicate_backlog() throws Exception {
-        Integer id = getProjectId("New Project XFS");
+        Integer id = getProjectId("New Project XFS", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/backlog/create", id)).contentType(MediaType.APPLICATION_JSON)
@@ -341,7 +332,7 @@ public class ProjectControllerTest {
     @Test
     @Order(21)
     public void test_add_mixed_epics() throws Exception {
-        Integer id = getProjectId("New Project XFS");
+        Integer id = getProjectId("New Project XFS", authToken);
 
         mockMvc.perform(
                         put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
@@ -355,7 +346,7 @@ public class ProjectControllerTest {
     @Test
     @Order(22)
     public void test_add_stories_to_epic() throws Exception {
-        Integer epicId = getEpicId();
+        Integer epicId = getEpicId(authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
@@ -401,7 +392,7 @@ public class ProjectControllerTest {
     @Test
     @Order(24)
     public void test_add_empty_stories_to_epic() throws Exception {
-        Integer epicId = getEpicId();
+        Integer epicId = getEpicId(authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
@@ -414,7 +405,7 @@ public class ProjectControllerTest {
     @Test
     @Order(25)
     public void test_add_duplicates_to_epic() throws Exception {
-        Integer epicId = getEpicId();
+        Integer epicId = getEpicId(authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
@@ -438,7 +429,7 @@ public class ProjectControllerTest {
     @Test
     @Order(26)
     public void test_rename_epic() throws Exception {
-        Integer epicId = getEpicId();
+        Integer epicId = getEpicId(authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/rename", epicId)).contentType(MediaType.APPLICATION_JSON)
@@ -457,95 +448,36 @@ public class ProjectControllerTest {
                         .content(testRenameJson("Renamed epic"))).andExpect(status().isNotFound());
     }
 
-    private String testRenameJson(String renamedEpic) {
-        try {
-            return objectMapper.writeValueAsString(new RenameEpicDto(renamedEpic));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAddStoryJson(List<AddStoryDto> dtos) {
-        try {
-            return objectMapper.writeValueAsString(dtos);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testCreateProjectJson(String newProject) {
-        try {
-            return objectMapper.writeValueAsString(new EmptyProjectDto(newProject));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAddEpicsJson(List<String> epicNames) {
-        try {
-            return objectMapper.writeValueAsString(new AddEpicsDto(epicNames));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAddMembersDtoJson(List<String> members) {
-        List<AddMembersDto> membersDtos = members.stream().map(AddMembersDto::new).toList();
-        try {
-            return objectMapper.writeValueAsString(membersDtos);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testRenameProjectJson(String newName) {
-        try {
-            return objectMapper.writeValueAsString(new RenameProjectDto(newName));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testAddSprintJson(String name) {
-        try {
-            return objectMapper.writeValueAsString(new AddSprintDto(name));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String testCreateBacklogJson(String name) {
-        try {
-            return objectMapper.writeValueAsString(new AddBacklogDto(name));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Integer getProjectId(String name) throws Exception {
-        MvcResult searchProjectResult = mockMvc.perform(
-                get(MessageFormat.format("/api/v1/project?name={0}", name)).contentType(MediaType.APPLICATION_JSON)
+    @Test
+    @Order(28)
+    public void test_add_stories_to_backlog_should_return_ok() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/backlog/1/stories/add").contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
-        ).andExpect(status().isOk()).andReturn();
-        String searchProjectJson = searchProjectResult.getResponse().getContentAsString();
-        Integer id = JsonPath.read(searchProjectJson, "$.project.id");
-        Assertions.assertThat(id).isNotNegative();
-        return id;
+                        .content(testAddBacklogStoriesJson(List.of(1)))
+        ).andExpect(status().isOk());
     }
 
-    private Integer getEpicId() throws Exception {
-        MvcResult searchEpicResult = mockMvc.perform(
-                get("/api/v1/epic?name=Epic ONE").contentType(MediaType.APPLICATION_JSON)
+    @Test
+    @Order(29)
+    public void test_add_nonexistentstories_to_backlog_should_return_servererror() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/backlog/1/stories/add").contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
-        ).andExpect(status().isOk()).andReturn();
-
-        String searchEpicJson = searchEpicResult.getResponse().getContentAsString();
-        int id = JsonPath.read(searchEpicJson, "$.epic.id");
-        Assertions.assertThat(id).isNotNegative();
-
-        return id;
+                        .content(testAddBacklogStoriesJson(List.of(2,3,4,5,6,7)))
+        ).andExpect(status().is5xxServerError());
     }
 
+    @Test
+    @Order(30)
+    public void test_add_stories_to_backlog_should_return_notfound() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/backlog/1000/stories/add").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testAddBacklogStoriesJson(List.of(1)))
+        ).andExpect(status().isNotFound());
+    }
 }
