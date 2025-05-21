@@ -2,6 +2,7 @@ package eu.flare;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import eu.flare.model.dto.EmptyProjectDto;
 import eu.flare.model.dto.add.*;
 import eu.flare.model.dto.rename.RenameEpicDto;
@@ -10,6 +11,7 @@ import eu.flare.repository.UserRepository;
 import eu.flare.service.AuthService;
 import eu.flare.service.JwtService;
 import eu.flare.service.ProjectService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,9 +78,8 @@ public class ProjectControllerTest {
                         post("/api/v1/project/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
-                                .content(testCreateProjectJson("New Project Some"))
-                ).andExpect(status().isCreated())
-                .andReturn();
+                                .content(testCreateProjectJson("ProjectControllerTest"))
+                ).andExpect(status().isCreated());
     }
 
     @Test
@@ -86,7 +89,7 @@ public class ProjectControllerTest {
                         post("/api/v1/project/create").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
-                                .content(testCreateProjectJson("New Project Some"))
+                                .content(testCreateProjectJson("ProjectControllerTest"))
                 ).andExpect(status().isConflict())
                 .andReturn();
     }
@@ -118,8 +121,10 @@ public class ProjectControllerTest {
     @Test
     @Order(5)
     public void test_project_query_for_epics() throws Exception {
+        Integer id = getProjectId("ProjectControllerTest");
+
         mockMvc.perform(
-                        get("/api/v1/project/1/epics").contentType(MediaType.APPLICATION_JSON)
+                        get(MessageFormat.format("/api/v1/project/{0}/epics", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                 ).andExpect(status().isNotFound())
@@ -129,8 +134,10 @@ public class ProjectControllerTest {
     @Test
     @Order(6)
     public void test_project_add_epics() throws Exception {
+        Integer id = getProjectId("ProjectControllerTest");
+
         mockMvc.perform(
-                put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
+                put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
                         .content(testAddEpicsJson(List.of("Epic ONE")))
@@ -138,7 +145,7 @@ public class ProjectControllerTest {
                 .andReturn();
 
         mockMvc.perform(
-                        get("/api/v1/project/1/epics").contentType(MediaType.APPLICATION_JSON)
+                        get(MessageFormat.format("/api/v1/project/{0}/epics", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                 ).andExpect(status().isOk())
@@ -148,8 +155,10 @@ public class ProjectControllerTest {
     @Test
     @Order(7)
     public void test_add_duplicate_epics() throws Exception {
+        Integer id = getProjectId("ProjectControllerTest");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testAddEpicsJson(List.of("Epic ONE")))
@@ -160,8 +169,10 @@ public class ProjectControllerTest {
     @Test
     @Order(8)
     public void test_add_empty_epics() throws Exception {
+        Integer id = getProjectId("ProjectControllerTest");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testAddEpicsJson(Collections.emptyList()))
@@ -184,8 +195,10 @@ public class ProjectControllerTest {
     @Test
     @Order(10)
     public void test_add_project_members() throws Exception {
+        Integer id = getProjectId("ProjectControllerTest");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/members/add").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/members/add", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testAddMembersDtoJson(List.of("admin_admin")))
@@ -196,8 +209,10 @@ public class ProjectControllerTest {
     @Test
     @Order(11)
     public void test_add_nonexistent_project_members() throws Exception {
+        Integer id = getProjectId("ProjectControllerTest");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/members/add").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/members/add", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testAddMembersDtoJson(List.of("serious_developer")))
@@ -220,8 +235,10 @@ public class ProjectControllerTest {
     @Test
     @Order(13)
     public void test_rename_project() throws Exception {
+        Integer id = getProjectId("ProjectControllerTest");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/rename").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/rename", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testRenameProjectJson("New Project XFS"))
@@ -244,8 +261,10 @@ public class ProjectControllerTest {
     @Test
     @Order(15)
     public void test_add_sprints() throws Exception {
+        Integer id = getProjectId("New Project XFS");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/sprints/add").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/sprints/add", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testAddSprintJson("New Sprint XFS"))
@@ -268,8 +287,10 @@ public class ProjectControllerTest {
     @Test
     @Order(17)
     public void test_add_duplicate_sprint_name() throws Exception {
+        Integer id = getProjectId("New Project XFS");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/sprints/add").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/sprints/add", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testAddSprintJson("New Sprint XFS"))
@@ -280,8 +301,10 @@ public class ProjectControllerTest {
     @Test
     @Order(18)
     public void test_create_backlog() throws Exception {
+        Integer id = getProjectId("New Project XFS");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/backlog/create").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/backlog/create", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testCreateBacklogJson("New Backlog XFS"))
@@ -304,8 +327,10 @@ public class ProjectControllerTest {
     @Test
     @Order(20)
     public void test_create_duplicate_backlog() throws Exception {
+        Integer id = getProjectId("New Project XFS");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/backlog/create").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/backlog/create", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testCreateBacklogJson("New Backlog XFS"))
@@ -316,8 +341,10 @@ public class ProjectControllerTest {
     @Test
     @Order(21)
     public void test_add_mixed_epics() throws Exception {
+        Integer id = getProjectId("New Project XFS");
+
         mockMvc.perform(
-                        put("/api/v1/project/1/epics/add").contentType(MediaType.APPLICATION_JSON)
+                        put(MessageFormat.format("/api/v1/project/{0}/epics/add", id)).contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, authToken)
                                 .content(testAddEpicsJson(List.of("Epic ONE", "Epic TWO")))
@@ -328,8 +355,10 @@ public class ProjectControllerTest {
     @Test
     @Order(22)
     public void test_add_stories_to_epic() throws Exception {
+        Integer epicId = getEpicId();
+
         mockMvc.perform(
-                put("/api/v1/epic/1/stories/add").contentType(MediaType.APPLICATION_JSON)
+                put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
                         .content(testAddStoryJson(
@@ -372,8 +401,10 @@ public class ProjectControllerTest {
     @Test
     @Order(24)
     public void test_add_empty_stories_to_epic() throws Exception {
+        Integer epicId = getEpicId();
+
         mockMvc.perform(
-                put("/api/v1/epic/1/stories/add").contentType(MediaType.APPLICATION_JSON)
+                put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
                         .content(testAddStoryJson(Collections.emptyList())))
@@ -383,8 +414,10 @@ public class ProjectControllerTest {
     @Test
     @Order(25)
     public void test_add_duplicates_to_epic() throws Exception {
+        Integer epicId = getEpicId();
+
         mockMvc.perform(
-                put("/api/v1/epic/1/stories/add").contentType(MediaType.APPLICATION_JSON)
+                put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
                         .content(testAddStoryJson(
@@ -405,8 +438,10 @@ public class ProjectControllerTest {
     @Test
     @Order(26)
     public void test_rename_epic() throws Exception {
+        Integer epicId = getEpicId();
+
         mockMvc.perform(
-                put("/api/v1/epic/1/rename").contentType(MediaType.APPLICATION_JSON)
+                put(MessageFormat.format("/api/v1/epic/{0}/rename", epicId)).contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
                         .content(testRenameJson("Renamed epic"))).andExpect(status().isOk());
@@ -486,4 +521,31 @@ public class ProjectControllerTest {
             throw new RuntimeException(e);
         }
     }
+
+    private Integer getProjectId(String name) throws Exception {
+        MvcResult searchProjectResult = mockMvc.perform(
+                get(MessageFormat.format("/api/v1/project?name={0}", name)).contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+        ).andExpect(status().isOk()).andReturn();
+        String searchProjectJson = searchProjectResult.getResponse().getContentAsString();
+        Integer id = JsonPath.read(searchProjectJson, "$.project.id");
+        Assertions.assertThat(id).isNotNegative();
+        return id;
+    }
+
+    private Integer getEpicId() throws Exception {
+        MvcResult searchEpicResult = mockMvc.perform(
+                get("/api/v1/epic?name=Epic ONE").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+        ).andExpect(status().isOk()).andReturn();
+
+        String searchEpicJson = searchEpicResult.getResponse().getContentAsString();
+        int id = JsonPath.read(searchEpicJson, "$.epic.id");
+        Assertions.assertThat(id).isNotNegative();
+
+        return id;
+    }
+
 }
