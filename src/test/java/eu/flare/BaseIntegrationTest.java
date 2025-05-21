@@ -10,6 +10,10 @@ import eu.flare.model.dto.SignupDto;
 import eu.flare.model.dto.add.*;
 import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
+import eu.flare.model.dto.rename.RenameStoryDto;
+import eu.flare.model.dto.update.UpdateEstimateDto;
+import eu.flare.model.dto.update.UpdateStoryPointsDto;
+import eu.flare.model.dto.update.UpdateStoryPriorityDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -193,9 +197,9 @@ public abstract class BaseIntegrationTest {
         return id;
     }
 
-    protected Integer getEpicId(String authToken) throws Exception {
+    protected Integer getEpicId(String name,String authToken) throws Exception {
         MvcResult searchEpicResult = mockMvc.perform(
-                get("/api/v1/epic?name=Epic ONE").contentType(MediaType.APPLICATION_JSON)
+                get(MessageFormat.format("/api/v1/epic?name={0}", name)).contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
         ).andExpect(status().isOk()).andReturn();
@@ -260,6 +264,38 @@ public abstract class BaseIntegrationTest {
         List<AddBacklogStoryDto> collect = ids.stream().map(AddBacklogStoryDto::new).toList();
         try {
             return objectMapper.writeValueAsString(collect);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String testRenameStoryJson(String newStoryName) {
+        try {
+            return objectMapper.writeValueAsString(new RenameStoryDto(newStoryName));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String testUpdatePriorityJson(String newPriority) {
+        try {
+            return objectMapper.writeValueAsString(new UpdateStoryPriorityDto(newPriority));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String testUpdateOriginalEstimateJson(long millis) {
+        try {
+            return objectMapper.writeValueAsString(new UpdateEstimateDto(millis));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String testUpdateStoryPointsJson(int points) {
+        try {
+            return objectMapper.writeValueAsString(new UpdateStoryPointsDto(points));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

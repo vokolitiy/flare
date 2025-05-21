@@ -346,7 +346,7 @@ public class ProjectControllerTest extends BaseIntegrationTest {
     @Test
     @Order(22)
     public void test_add_stories_to_epic() throws Exception {
-        Integer epicId = getEpicId(authToken);
+        Integer epicId = getEpicId("Epic ONE", authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
@@ -392,7 +392,7 @@ public class ProjectControllerTest extends BaseIntegrationTest {
     @Test
     @Order(24)
     public void test_add_empty_stories_to_epic() throws Exception {
-        Integer epicId = getEpicId(authToken);
+        Integer epicId = getEpicId("Epic ONE", authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
@@ -405,7 +405,7 @@ public class ProjectControllerTest extends BaseIntegrationTest {
     @Test
     @Order(25)
     public void test_add_duplicates_to_epic() throws Exception {
-        Integer epicId = getEpicId(authToken);
+        Integer epicId = getEpicId("Epic ONE", authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/stories/add", epicId)).contentType(MediaType.APPLICATION_JSON)
@@ -429,7 +429,7 @@ public class ProjectControllerTest extends BaseIntegrationTest {
     @Test
     @Order(26)
     public void test_rename_epic() throws Exception {
-        Integer epicId = getEpicId(authToken);
+        Integer epicId = getEpicId("Epic ONE", authToken);
 
         mockMvc.perform(
                 put(MessageFormat.format("/api/v1/epic/{0}/rename", epicId)).contentType(MediaType.APPLICATION_JSON)
