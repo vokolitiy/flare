@@ -1,6 +1,5 @@
 package eu.flare.service;
 
-import eu.flare.exceptions.conflicts.TasksNamesConflictException;
 import eu.flare.exceptions.misc.UnknownPriorityTypeException;
 import eu.flare.exceptions.misc.UnknownProgressTypeException;
 import eu.flare.exceptions.notfound.StoryNotFoundException;
@@ -43,7 +42,7 @@ public class StoryService {
         return storyRepository.findByName(name);
     }
 
-    public Story createTasksForStory(long id, List<AddTaskDto> addTaskDtos) throws StoryNotFoundException, TasksNamesConflictException {
+    public Story createTasksForStory(long id, List<AddTaskDto> addTaskDtos) throws StoryNotFoundException {
         Optional<Story> storyOptional = storyRepository.findById(id);
         if (storyOptional.isEmpty()) {
             throw new StoryNotFoundException("Story not found");

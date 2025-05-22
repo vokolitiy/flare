@@ -256,6 +256,14 @@ public abstract class BaseIntegrationTest {
         }
     }
 
+    protected String testAddTasksJson(List<AddTaskDto> dtos) {
+        try {
+            return objectMapper.writeValueAsString(dtos);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected String testAddEpicsJson(List<String> epicNames) {
         try {
             return objectMapper.writeValueAsString(new AddEpicsDto(epicNames));

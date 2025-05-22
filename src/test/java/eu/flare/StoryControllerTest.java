@@ -1,6 +1,7 @@
 package eu.flare;
 
 import eu.flare.model.dto.add.AddStoryDto;
+import eu.flare.model.dto.add.AddTaskDto;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -276,6 +277,50 @@ public class StoryControllerTest extends BaseIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authToken)
                         .content(testUpdateStoryPointsJson(23))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(20)
+    public void test_addtasks_should_return_created() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/story/1/tasks/add").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testAddTasksJson(List.of(new AddTaskDto(
+                                "Implement bottom navigation",
+                                "Implement bottom navigation using Jetpack navigation library",
+                                86400,
+                                100,
+                                50,
+                                10,
+                                "Major",
+                                "Todo",
+                                "admin_admin",
+                                "admin_admin"
+                        ))))
+        ).andExpect(status().isCreated());
+    }
+
+    @Test
+    @Order(21)
+    public void test_addtasks_should_return_notfound() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/story/1828282992929/tasks/add").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testAddTasksJson(List.of(new AddTaskDto(
+                                "Implement bottom navigation",
+                                "Implement bottom navigation using Jetpack navigation library",
+                                86400,
+                                100,
+                                50,
+                                10,
+                                "Major",
+                                "Todo",
+                                "admin_admin",
+                                "admin_admin"
+                        ))))
         ).andExpect(status().isNotFound());
     }
 }

@@ -1,6 +1,5 @@
 package eu.flare.controller;
 
-import eu.flare.exceptions.conflicts.TasksNamesConflictException;
 import eu.flare.exceptions.misc.UnknownPriorityTypeException;
 import eu.flare.exceptions.misc.UnknownProgressTypeException;
 import eu.flare.exceptions.notfound.StoryNotFoundException;
@@ -46,9 +45,6 @@ public class StoryController {
         } catch (StoryNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new StoryNotFoundException("Story not found"));
-        } catch (TasksNamesConflictException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new Responses.TaskNamesConflictResponse(e.getMessage()));
         }
     }
 
