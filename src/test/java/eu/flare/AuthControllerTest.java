@@ -46,7 +46,7 @@ public class AuthControllerTest extends BaseIntegrationTest {
         MvcResult result = mockMvc.perform(
                 post("/api/v1/auth/signup").contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(testAuthJson())
+                        .content(testAuthJson("Testsub", "Subject", "Averages", "Joei","testsub@email.com", "Traders", "USER"))
         ).andExpect(status().isOk())
                 .andReturn();
 
@@ -67,7 +67,7 @@ public class AuthControllerTest extends BaseIntegrationTest {
         mockMvc.perform(
                         post("/api/v1/auth/signup").contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
-                                .content(testAuthJson())
+                                .content(testAuthJson("Testsub", "Subject", "Averages", "Joei","testsub@email.com", "Traders", "USER"))
                 ).andExpect(status().isConflict())
                 .andReturn();
     }

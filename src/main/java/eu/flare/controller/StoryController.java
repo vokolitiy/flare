@@ -151,4 +151,15 @@ public class StoryController {
                     .body(new Responses.StoryNotFoundResponse(e.getMessage()));
         }
     }
+
+    @PutMapping("/{id}/assignee/update")
+    public ResponseEntity<?> updateAssignee(@PathVariable("id") long id, @RequestBody UpdateAssigneeDto dto) {
+        try {
+            Story story = storyService.changeStoryAssignee(id, dto);
+            return ResponseEntity.ok(new Responses.StoryResponse(story));
+        } catch (StoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new Responses.StoryNotFoundResponse(e.getMessage()));
+        }
+    }
 }

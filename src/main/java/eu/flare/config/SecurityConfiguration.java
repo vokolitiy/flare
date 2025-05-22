@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/v1/story/{id}/estimate/update").authenticated()
                     .requestMatchers("/api/v1/story/{id}/estimate/remaining/update").authenticated()
                     .requestMatchers("/api/v1/story/{id}/storypoints/update").authenticated()
+                    .requestMatchers("/api/v1/story/{id}/assignee/update").authenticated()
                     .requestMatchers("/api/v1/task").authenticated()
                     .requestMatchers("/api/v1/task/{id}/rename").authenticated()
                     .requestMatchers("/api/v1/backlog").authenticated()

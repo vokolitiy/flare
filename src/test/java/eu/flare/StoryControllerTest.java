@@ -1,7 +1,9 @@
 package eu.flare;
 
+import com.jayway.jsonpath.JsonPath;
 import eu.flare.model.dto.add.AddStoryDto;
 import eu.flare.model.dto.add.AddTaskDto;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import javax.print.attribute.standard.Media;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -321,6 +322,51 @@ public class StoryControllerTest extends BaseIntegrationTest {
                                 "admin_admin",
                                 "admin_admin"
                         ))))
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(22)
+    public void test_change_story_assignee_should_return_ok() throws Exception {
+        MvcResult createUserResult = mockMvc.perform(
+                post("/api/v1/auth/signup").contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(testAuthJson("TestsubXY", "SubjectXY", "AveragesXY", "Joei","testsubXY@email.com", "Traders", "USER"))
+        ).andExpect(status().isOk()).andReturn();
+
+        String createUserJson = createUserResult.getResponse().getContentAsString();
+        String username = JsonPath.read(createUserJson, "$.username");
+
+        mockMvc.perform(
+                put("/api/v1/story/1/assignee/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testUpdateAssigneeJson(username))
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(23)
+    public void test_change_story_assignee_should_return_5xx() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/story/1/assignee/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testUpdateAssigneeJson("NewlyCreatedAssignee"))
+        ).andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    @Order(24)
+    public void test_change_story_assignee_should_return_notfound() throws Exception {
+        mockMvc.perform(
+                put("/api/v1/story/189299292929/assignee/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+                        .content(testUpdateAssigneeJson("TestsubXY"))
         ).andExpect(status().isNotFound());
     }
 }

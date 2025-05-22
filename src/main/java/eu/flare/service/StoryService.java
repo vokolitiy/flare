@@ -162,4 +162,14 @@ public class StoryService {
         story.setStoryPoints(dto.storyPoints());
         return storyRepository.save(story);
     }
+
+    @Transactional(rollbackOn = Exception.class)
+    public Story changeStoryAssignee(long id, UpdateAssigneeDto dto) throws StoryNotFoundException {
+        Story story = storyRepository.findById(id)
+                .orElseThrow(() -> new StoryNotFoundException("Story not found"));
+        User storyAssignee = userRepository.findByUsername(dto.name())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        story.setStoryAssignee(storyAssignee);
+        return storyRepository.save(story);
+    }
 }

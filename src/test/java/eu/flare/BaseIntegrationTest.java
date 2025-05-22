@@ -12,6 +12,7 @@ import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
 import eu.flare.model.dto.rename.RenameSprintDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
+import eu.flare.model.dto.update.UpdateAssigneeDto;
 import eu.flare.model.dto.update.UpdateEstimateDto;
 import eu.flare.model.dto.update.UpdateStoryPointsDto;
 import eu.flare.model.dto.update.UpdateStoryPriorityDto;
@@ -112,10 +113,18 @@ public abstract class BaseIntegrationTest {
         }
     }
 
-    protected String testAuthJson() {
+    protected String testAuthJson(
+            String username,
+            String firstName,
+            String lastName,
+            String middleName,
+            String email,
+            String password,
+            String role
+    ) {
         try {
             return objectMapper.writeValueAsString(new SignupDto(
-                    "Testsub", "Subject", "Averages", "Joei","testsub@email.com", "Traders", "USER"
+                    username, firstName, lastName, middleName,email, password, role
             ));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -351,6 +360,14 @@ public abstract class BaseIntegrationTest {
                 .toList();
         try {
             return objectMapper.writeValueAsString(dtos);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String testUpdateAssigneeJson(String name) {
+        try {
+            return objectMapper.writeValueAsString(new UpdateAssigneeDto(name));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
