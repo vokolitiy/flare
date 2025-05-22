@@ -10,6 +10,7 @@ import eu.flare.model.dto.SignupDto;
 import eu.flare.model.dto.add.*;
 import eu.flare.model.dto.rename.RenameEpicDto;
 import eu.flare.model.dto.rename.RenameProjectDto;
+import eu.flare.model.dto.rename.RenameSprintDto;
 import eu.flare.model.dto.rename.RenameStoryDto;
 import eu.flare.model.dto.update.UpdateEstimateDto;
 import eu.flare.model.dto.update.UpdateStoryPointsDto;
@@ -211,6 +212,34 @@ public abstract class BaseIntegrationTest {
         return id;
     }
 
+    protected Integer getSprintId(String name, String authToken) throws Exception {
+        MvcResult searchSprintResult = mockMvc.perform(
+                get(MessageFormat.format("/api/v1/sprint?name={0}", name)).contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+        ).andExpect(status().isOk()).andReturn();
+
+        String searchSprintJson = searchSprintResult.getResponse().getContentAsString();
+        int id = JsonPath.read(searchSprintJson, "$.sprint.id");
+        Assertions.assertThat(id).isNotNegative();
+
+        return id;
+    }
+
+    protected Integer getStoryId(String name, String authToken) throws Exception {
+        MvcResult searchStoryResult = mockMvc.perform(
+                get(MessageFormat.format("/api/v1/story?name={0}", name)).contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authToken)
+        ).andExpect(status().isOk()).andReturn();
+
+        String searchStoryJson = searchStoryResult.getResponse().getContentAsString();
+        int id = JsonPath.read(searchStoryJson, "$.story.id");
+        Assertions.assertThat(id).isNotNegative();
+
+        return id;
+    }
+
     protected String testRenameJson(String renamedEpic) {
         try {
             return objectMapper.writeValueAsString(new RenameEpicDto(renamedEpic));
@@ -296,6 +325,24 @@ public abstract class BaseIntegrationTest {
     protected String testUpdateStoryPointsJson(int points) {
         try {
             return objectMapper.writeValueAsString(new UpdateStoryPointsDto(points));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String testRenameSprintJson(String newName) {
+        try {
+            return objectMapper.writeValueAsString(new RenameSprintDto(newName));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String testAddStoriesIdsJson(List<Integer> ids) {
+        List<AddSprintStoryDto> dtos = ids.stream().map(AddSprintStoryDto::new)
+                .toList();
+        try {
+            return objectMapper.writeValueAsString(dtos);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
